@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7913b7ace349b409599b36af1f2ffc, type: 3}
   m_Name: MapData
   m_EditorClassIdentifier: 
-  start: {x: 0, y: 0}
-  size: {x: 1, y: 1}
+  start: {x: -8, y: -5}
+  map:
+    Size: {x: 8, y: 7}
+    Elements: 0000000000000000000000000000000000000101010101000000010001010100000001000101010000000101010101000000000000000000

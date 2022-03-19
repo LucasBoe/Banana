@@ -3,14 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class QuadCreator : MonoBehaviour
 {
+    [SerializeField] Tilemap tilemap;
     [SerializeField] public MapData MapData;
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] Material material;
 
-    public const float yScale = 1.41421356237f;
+    public const float yScale = 1f;
 
     public void UpdateMesh()
     {
@@ -18,9 +20,9 @@ public class QuadCreator : MonoBehaviour
 
         MeshData meshData = new MeshData();
 
-        for (int x = 0; x < MapData.size.x; x++)
+        for (int x = 0; x < MapData.map.Size.x; x++)
         {
-            for (int y = 0; y < MapData.size.y; y++)
+            for (int y = 0; y < MapData.map.Size.y; y++)
             {
                 NeightbourResult result = new NeightbourResult()
                 {
@@ -47,14 +49,16 @@ public class QuadCreator : MonoBehaviour
 
     private void DrawTile(Vector2Int pos, bool air, NeightbourResult result, MeshData meshData)
     {
+        tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), new Tile());
+
         if (air)
         {
             int zero = meshData.Verts.Count;
             meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                new Vector3(pos.x, 0, pos.y * yScale ),
-                new Vector3(pos.x + 1, 0, pos.y * yScale),
-                new Vector3(pos.x, 0, (pos.y + 1) * yScale),
-                new Vector3(pos.x +1, 0, (pos.y + 1) * yScale)
+                new Vector3(pos.x, pos.y * yScale),
+                new Vector3(pos.x + 1, pos.y * yScale),
+                new Vector3(pos.x, (pos.y + 1) * yScale),
+                new Vector3(pos.x +1, (pos.y + 1) * yScale)
             }).ToList();
 
             meshData.Tris = ConnectQuad(meshData, zero);
@@ -66,10 +70,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, 0, pos.y * yScale ),
-                    new Vector3(pos.x + 1, 0, pos.y * yScale),
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale),
+                    new Vector3(pos.x, pos.y * yScale ),
+                    new Vector3(pos.x + 1, pos.y * yScale),
+                    new Vector3(pos.x, pos.y * yScale, -yScale ),
+                    new Vector3(pos.x + 1, pos.y * yScale, -yScale),
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -81,10 +85,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, 0, (pos.y + 1) * yScale ),
-                    new Vector3(pos.x + 1, 0, (pos.y + 1) * yScale),
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale ),
-                    new Vector3(pos.x + 1, yScale, (pos.y + 1) * yScale),
+                    new Vector3(pos.x, (pos.y + 1) * yScale ),
+                    new Vector3(pos.x + 1, (pos.y + 1) * yScale),
+                    new Vector3(pos.x, (pos.y + 1) * yScale, -yScale ),
+                    new Vector3(pos.x + 1, (pos.y + 1) * yScale, -yScale),
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -96,10 +100,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x + 1, 0, (pos.y + 1) * yScale),
-                    new Vector3(pos.x + 1, 0, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale ),
+                    new Vector3(pos.x + 1, (pos.y + 1) * yScale),
+                    new Vector3(pos.x + 1,  pos.y * yScale ),
+                    new Vector3(pos.x + 1, (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x + 1, pos.y * yScale, -yScale ),
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -111,10 +115,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x, 0, (pos.y + 1) * yScale),
-                    new Vector3(pos.x, 0, pos.y * yScale ),
+                    new Vector3(pos.x, (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x, pos.y * yScale , -yScale),
+                    new Vector3(pos.x, (pos.y + 1) * yScale),
+                    new Vector3(pos.x, pos.y * yScale ),
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -128,10 +132,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale),
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x +1, yScale, (pos.y + 1) * yScale)
+                    new Vector3(pos.x,  pos.y * yScale, -yScale ),
+                    new Vector3(pos.x + 1,  pos.y * yScale, -yScale),
+                    new Vector3(pos.x,  (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x +1,  (pos.y + 1) * yScale, -yScale)
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -143,10 +147,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale),
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x +1, yScale, (pos.y + 1) * yScale)
+                    new Vector3(pos.x,  pos.y * yScale, -yScale ),
+                    new Vector3(pos.x + 1,  pos.y * yScale, -yScale),
+                    new Vector3(pos.x,  (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x +1,  (pos.y + 1) * yScale, -yScale)
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -158,10 +162,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale),
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x +1, yScale, (pos.y + 1) * yScale)
+                    new Vector3(pos.x,  pos.y * yScale, -yScale ),
+                    new Vector3(pos.x + 1,  pos.y * yScale, -yScale),
+                    new Vector3(pos.x,  (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x +1,  (pos.y + 1) * yScale,-yScale)
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
@@ -173,10 +177,10 @@ public class QuadCreator : MonoBehaviour
             {
                 int z = meshData.Verts.Count;
                 meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, yScale, pos.y * yScale ),
-                    new Vector3(pos.x + 1, yScale, pos.y * yScale),
-                    new Vector3(pos.x, yScale, (pos.y + 1) * yScale),
-                    new Vector3(pos.x +1, yScale, (pos.y + 1) * yScale)
+                    new Vector3(pos.x,  pos.y * yScale, -yScale ),
+                    new Vector3(pos.x + 1,  pos.y * yScale, -yScale),
+                    new Vector3(pos.x,  (pos.y + 1) * yScale, -yScale),
+                    new Vector3(pos.x +1,  (pos.y + 1) * yScale, -yScale)
                 }).ToList();
 
                 meshData.Tris = ConnectQuad(meshData, z);
