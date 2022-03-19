@@ -5,9 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class QuadCreator : MonoBehaviour
+public class Room : MonoBehaviour
 {
-    [SerializeField] Tilemap tilemap;
     [SerializeField] public MapData MapData;
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] Material material;
@@ -47,10 +46,29 @@ public class QuadCreator : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
+    public Vector2Int RemoveOffset(Vector3 point)
+    {
+        return new Vector2Int(Mathf.FloorToInt(point.x - transform.position.x), Mathf.FloorToInt((point.y / Room.yScale) - transform.position.y));
+    }
+    internal Vector2 CorrectToRoomPerimeter(Vector2 origin, Vector2 change)
+    {
+        if (IsInside(change))
+            return change;
+        else if (IsInside(new Vector2(change.x, origin.y)))
+            return new Vector2(change.x, origin.y);
+        else if (IsInside(new Vector2(origin.x, change.y)))
+            return new Vector2(origin.x, change.y);
+
+        return origin;
+    }
+
+    public bool IsInside(Vector2 pos)
+    {
+        return MapData.GetAirAt(RemoveOffset(pos));
+    }
+
     private void DrawTile(Vector2Int pos, bool air, NeightbourResult result, MeshData meshData)
     {
-        tilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), new Tile());
-
         if (air)
         {
             int zero = meshData.Verts.Count;

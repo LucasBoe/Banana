@@ -39,6 +39,12 @@ public class MapData : ScriptableObject
         return x > 0 && x + 1 < map.Size.x - 2 && y > 0 && y + 1 < map.Size.y;
     }
 
+    public bool GetAirAt(Vector2Int global)
+    {
+        Vector2Int local = ToLocal(global);
+        return IsAir(local.x, local.y);
+    }
+
     public void AddAirAt(Vector2Int global)
     {
         Vector2Int local = ToLocal(global);
@@ -97,7 +103,7 @@ public class MapData : ScriptableObject
         map.Size = newSize;
     }
 
-    private Vector2Int ToLocal(Vector2Int global)
+    public Vector2Int ToLocal(Vector2Int global)
     {
         return new Vector2Int(global.x - start.x, global.y - start.y);
     }

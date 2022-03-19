@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(QuadCreator))]
+[CustomEditor(typeof(Room))]
 public class TileEditor : Editor
 {
     bool isInRazorMode;
@@ -37,8 +37,8 @@ public class TileEditor : Editor
             {
                 Vector3 point = ray.GetPoint(rayDistance);
                 Util.DebugDrawCross(point, Color.green, 0.5f, lifetime: 3f);
-                QuadCreator t = (target as QuadCreator);
-                Vector2Int tile = new Vector2Int(Mathf.FloorToInt(point.x - t.transform.position.x), Mathf.FloorToInt((point.y / QuadCreator.yScale) - t.transform.position.y));
+                Room t = (target as Room);
+                Vector2Int tile = t.RemoveOffset(point);
                 if (isInRazorMode)
                     t.MapData.RemoveTileAt(tile);
                 else
