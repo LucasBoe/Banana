@@ -10,42 +10,30 @@ public class Player : MonoBehaviour
     [SerializeField] PlayerInputModule inputModule;
     [SerializeField] PlayerAnimationModule animationModule;
 
-    void Awake()
-    {
-        moveModule.Init(gameObject);
-    }
-
-    private void Start()
-    {
-
-    }
-
     private void FixedUpdate()
     {
         Vector2 position = transform.position;
         Vector2 input = inputModule.GetInput();
-        Vector2 moveTarget = roomModule.GetClosestPointInRoom(position, position + input * Time.fixedDeltaTime * 3f);
-        moveModule.MoveTo(moveTarget);
-        if (moveTarget != position)
+        Vector2 moveVector = moveModule.GetMoveVectorFromInput(input);
+
+        Vector2 targetPosition = roomModule.GetClosestPointInRoom(position, moveVector);
+        moveModule.MoveTo(targetPosition);
+
+        if (targetPosition != position)
             animationModule.Animate(input, Time.fixedDeltaTime);
     }
 }
 
-public abstract class PlayerModule
-{
-    protected GameObject gameObject;
-    public virtual void Init(GameObject gameObject)
-    {
-        this.gameObject = gameObject;
-    }
-}
+public abstract class PlayerModule { }
 
 [System.Serializable]
 public class PlayerInputModule : PlayerModule
 {
+    [SerializeField] Vector2 input;
     public Vector2 GetInput()
     {
-        return (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up).normalized;
+        input = (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up).normalized;
+        return input;
     }
 }
 
@@ -53,6 +41,13 @@ public class PlayerInputModule : PlayerModule
 public class PlayerMoveModule : PlayerModule
 {
     [SerializeField] Rigidbody2D rigidbody2D;
+    [SerializeField] float speed = 3.5f;
+    public float Speed => speed;
+
+    internal Vector2 GetMoveVectorFromInput(Vector2 input)
+    {
+        return input * Time.fixedDeltaTime * speed;
+    }
 
     internal void MoveTo(Vector2 moveTarget)
     {
@@ -70,9 +65,9 @@ public class PlayerRoomModule : PlayerModule
         return Current.IsInside(pos);
     }
 
-    internal Vector2 GetClosestPointInRoom(Vector2 origin, Vector2 change)
+    public Vector2 GetClosestPointInRoom(Vector2 origin, Vector2 change)
     {
-        return Current.CorrectToRoomPerimeter(origin, change);
+        return Current.AddaptToRoomPerimeter(origin, origin + change);
     }
 }
 

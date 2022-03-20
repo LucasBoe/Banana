@@ -39,38 +39,35 @@ public class MapData : ScriptableObject
         return x > 0 && x + 1 < map.Size.x - 2 && y > 0 && y + 1 < map.Size.y;
     }
 
-    public bool GetAirAt(Vector2Int global)
+    public bool GetAirAt(Vector2Int local)
     {
-        Vector2Int local = ToLocal(global);
         return IsAir(local.x, local.y);
     }
 
-    public void AddAirAt(Vector2Int global)
+    public void AddAirAt(Vector2Int local)
     {
-        Vector2Int local = ToLocal(global);
-
         if (IsInsidePerimeterBorder(local.x, local.y))
         {
             map.Set(local.x, local.y, true);
         }
         else
         {
-            ResizeToFit(global.x, global.y);
+            ResizeToFit(local);
         }
     }
 
-    public void RemoveTileAt(Vector2Int global)
+    public void RemoveTileAt(Vector2Int local)
     {
-        Vector2Int local = ToLocal(global);
-
         if (IsInsidePerimeter(local.x, local.y))
-        {
             map.Set(local.x, local.y, false);
-        }
     }
 
-    private void ResizeToFit(int newX, int newY)
+    private void ResizeToFit(Vector2Int local)
     {
+        Vector2Int newTile = AddOffset(local);
+
+        int newX = newTile.x;
+        int newY = newTile.y;
 
         Vector2Int oldMin = start;
         Vector2Int oldSize = map.Size;
@@ -103,9 +100,13 @@ public class MapData : ScriptableObject
         map.Size = newSize;
     }
 
-    public Vector2Int ToLocal(Vector2Int global)
+    public Vector2Int RemoveOffset(Vector2Int global)
     {
         return new Vector2Int(global.x - start.x, global.y - start.y);
+    }
+    public Vector2Int AddOffset(Vector2Int local)
+    {
+        return new Vector2Int(local.x + start.x, local.y + start.y);
     }
 }
 

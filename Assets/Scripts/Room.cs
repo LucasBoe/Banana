@@ -48,16 +48,17 @@ public class Room : MonoBehaviour
 
     public Vector2Int RemoveOffset(Vector3 point)
     {
-        return new Vector2Int(Mathf.FloorToInt(point.x - transform.position.x), Mathf.FloorToInt((point.y / Room.yScale) - transform.position.y));
+        Vector2Int newPoint =  new Vector2Int(Mathf.FloorToInt(point.x - transform.position.x), Mathf.FloorToInt((point.y / Room.yScale) - transform.position.y));
+        return MapData.RemoveOffset(newPoint);
     }
-    internal Vector2 CorrectToRoomPerimeter(Vector2 origin, Vector2 change)
+    internal Vector2 AddaptToRoomPerimeter(Vector2 origin, Vector2 target)
     {
-        if (IsInside(change))
-            return change;
-        else if (IsInside(new Vector2(change.x, origin.y)))
-            return new Vector2(change.x, origin.y);
-        else if (IsInside(new Vector2(origin.x, change.y)))
-            return new Vector2(origin.x, change.y);
+        if (IsInside(target))        
+            return target;        
+        else if (IsInside(new Vector2(target.x, origin.y)))        
+            return new Vector2(target.x, origin.y);        
+        else if (IsInside(new Vector2(origin.x, target.y)))        
+            return new Vector2(origin.x, target.y);      
 
         return origin;
     }
