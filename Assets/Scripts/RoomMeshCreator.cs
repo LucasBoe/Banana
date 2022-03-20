@@ -8,7 +8,7 @@ public class RoomMeshCreator : MonoBehaviour
 {
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] Material material;
-    public void UpdateMesh(MapData data)
+    public void UpdateMesh(TileData data)
     {
         meshRenderer.sharedMaterial = material;
 
@@ -216,5 +216,20 @@ public class RoomMeshCreator : MonoBehaviour
                 // upper right triangle
                 zero + 2, zero + 3, zero + 1
             }).ToList();
+    }
+}
+public class MeshData
+{
+    public List<Vector3> Verts = new List<Vector3>();
+    public List<int> Tris = new List<int>();
+    public List<Vector3> Normals = new List<Vector3>();
+    public List<Vector2> UV = new List<Vector2>();
+}
+public class NeightbourResult
+{
+    public bool Right, Left, Top, Bottom;
+    public override string ToString()
+    {
+        return $"r:{Right}, l:{Left}, t:{Top}, b:{Bottom}";
     }
 }

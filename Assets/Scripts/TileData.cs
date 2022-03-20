@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class MapData
+public class TileData
 {
-    public MapArray Array;
+    public TileArray Array;
 
     [Button]
     public void Clear()
     {
-        Array = new MapArray(Vector2Int.zero, Vector2Int.zero);
+        Array = new TileArray(Vector2Int.zero, Vector2Int.zero);
     }
 
     internal bool IsAir(int x, int y)
@@ -122,15 +122,15 @@ public class MapData
         Vector2Int newMax = new Vector2Int(newMaxX, newMaxY);
         Vector2Int newSize = newMax - newMin;
 
-        MapArray newMap = CreateNewMapWithSize(oldMin, newMin, newSize);
+        TileArray newMap = CreateNewMapWithSize(oldMin, newMin, newSize);
         newMap.Set(newX - newMinX, newY - newMinY, true);
 
         Array = newMap;
     }
 
-    private MapArray CreateNewMapWithSize(Vector2Int oldMin, Vector2Int newMin, Vector2Int newSize)
+    private TileArray CreateNewMapWithSize(Vector2Int oldMin, Vector2Int newMin, Vector2Int newSize)
     {
-        MapArray newMap = new MapArray(newSize, newMin);
+        TileArray newMap = new TileArray(newSize, newMin);
         for (int x = 0; x < newSize.x; x++)
         {
             for (int y = 0; y < newSize.y; y++)
@@ -156,13 +156,13 @@ public class MapData
 }
 
 [System.Serializable]
-public class MapArray
+public class TileArray
 {
     public Vector2Int Size;
     public Vector2Int Offset;
     public bool[] Elements;
 
-    public MapArray(Vector2Int newSize, Vector2Int newOffset)
+    public TileArray(Vector2Int newSize, Vector2Int newOffset)
     {
         Size = newSize;
         Offset = newOffset;

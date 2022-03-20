@@ -41,11 +41,11 @@ public class TileEditor : Editor
                 Vector2Int tile = t.RemoveOffset(point);
 
                 if (isInRazorMode)
-                    t.MapData.RemoveTileAt(tile);
+                    t.TileData.RemoveTileAt(tile);
                 else
-                    t.MapData.AddAirAt(tile);
+                    t.TileData.AddAirAt(tile);
 
-                t.GetComponent<RoomMeshCreator>().UpdateMesh(t.MapData);
+                t.GetComponent<RoomMeshCreator>().UpdateMesh(t.TileData);
             }
         }
     }

@@ -61,16 +61,16 @@ namespace PlayerModules
     [System.Serializable]
     public class PlayerRoomModule : PlayerModule
     {
-        [SerializeField] Room Current;
+        [SerializeField] RoomInfo roomInfo;
 
         public bool IsInsideRoom(Vector2 pos)
         {
-            return Current.IsInside(pos);
+            return roomInfo.Room.IsInside(pos);
         }
 
         public Vector2 GetClosestPointInRoom(Vector2 origin, Vector2 change)
         {
-            return Current.AddaptToRoomPerimeter(origin, origin + change);
+            return roomInfo.Room.AdaptVector2ToRoomPerimeter(origin, origin + change);
         }
     }
 

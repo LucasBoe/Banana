@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class EdgeFinder : MonoBehaviour
 {
-    [SerializeField] MapData mapData;
+    [SerializeField] TileData mapData;
 
     [Button]
     private void Find()
