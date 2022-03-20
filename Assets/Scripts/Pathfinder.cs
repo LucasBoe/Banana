@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 public class Pathfinder : MonoBehaviour
@@ -35,7 +38,7 @@ public class Pathfinder : MonoBehaviour
 
             Vector2 directVector = ((Vector2)target.position - pos).normalized;
             Vector2 roatedVector = directVector.Rotate(angleOffset);
-            Vector2 toCheck = pos + roatedVector * 0.25f;
+            Vector2 toCheck = pos + roatedVector * (distance < 0.5f ? 0.1f : 0.5f);
 
             bool isAirAtDirect = CheckPosition(toCheck);
             Gizmos.color = isAirAtDirect ? Color.green : Color.red;
@@ -50,16 +53,18 @@ public class Pathfinder : MonoBehaviour
             }
             else
             {
-                angleOffset += 45f * angleDirection;
-
-                if (angleOffset < -135f || angleOffset > 135f)
-                    angleDirection *= -1f;
+                if (angleOffset > 0)
+                    angleOffset = - angleOffset;
+                else
+                {
+                    angleOffset = (-angleOffset + 45f);
+                }
             }
 
             steps++;
         }
 
-        for (int i = 1; i < 3; i++)
+        for (int i = 1; i < 6; i++)
         {
             CleanUp(points, i);
         }
@@ -67,11 +72,27 @@ public class Pathfinder : MonoBehaviour
         for (int i = 1; i < points.Count; i++)
             Gizmos.DrawLine(points[i - 1], points[i]);
 
+#if UNITY_EDITOR
+        Handles.Label(transform.position, steps.ToString());
+#endif
     }
 
     private bool CheckPosition(Vector2 toCheck)
     {
         return room.IsInside(toCheck + Vector2.up * 0.25f) && room.IsInside(toCheck + Vector2.down * 0.25f) && room.IsInside(toCheck + Vector2.right * 0.25f) && room.IsInside(toCheck + Vector2.left * 0.25f);
+    }
+
+    private bool CheckPosition(Vector2 start, Vector2 end)
+    {
+        int intervalls = Mathf.RoundToInt(Vector2.Distance(start, end) * 2);
+        for (int i = 0; i < intervalls; i++)
+        {
+            Vector2 point = Vector2.Lerp(start, end, i / (float)(intervalls));
+            if (!CheckPosition(point))
+                return false;
+        }
+
+        return true;
     }
 
     private void CleanUp(List<Vector2> points, float maxDistance)
@@ -83,7 +104,7 @@ public class Pathfinder : MonoBehaviour
             Vector2 before = points[i - 1];
             Vector2 after = points[i + 1];
 
-            if (Vector2.Distance(before, after) < maxDistance && CheckPosition(Vector2.Lerp(before, after, 0.5f)))
+            if (Vector2.Distance(before, after) < maxDistance && CheckPosition(before, after))
                 toRemove.Add(points[i]);
         }
 
