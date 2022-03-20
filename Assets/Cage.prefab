@@ -219,6 +219,7 @@ GameObject:
   - component: {fileID: 8316563523370904820}
   - component: {fileID: 1213477123258485286}
   - component: {fileID: 5925225789238987163}
+  - component: {fileID: 8918081326522263498}
   m_Layer: 0
   m_Name: Cage
   m_TagString: Untagged
@@ -280,3 +281,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &8918081326522263498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8656357028837340750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ead51b48a62c59489b6f27f10f8e98d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cage: {fileID: 1213477123258485286}
+  mat: {fileID: 2100000, guid: 3a8297be3607f694e93c5af2d96fc2eb, type: 2}
+  meshes:
+  - {fileID: 40116367468696807}
+  - {fileID: 3613101558722882335}
