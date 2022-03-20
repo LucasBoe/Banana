@@ -9,6 +9,7 @@ public class CageShaker : MonoBehaviour
     [SerializeField] Cage cage;
     [SerializeField] Material mat;
     [SerializeField] MeshRenderer[] meshes;
+    [SerializeField] float shakeIntensity = 0.25f;
 
     private void Awake()
     {
@@ -20,7 +21,7 @@ public class CageShaker : MonoBehaviour
     private void Start()
     {
         mat.SetVector("offsets", new Vector4(Random.Range(0f, 20f), Random.Range(0f, 20f), Random.Range(0f, 20f), Random.Range(0f, 20f)));
-        mat.SetFloat("shake", 0.25f);
+        mat.SetFloat("shake", shakeIntensity);
     }
 
     private void OnEnable()
@@ -38,11 +39,11 @@ public class CageShaker : MonoBehaviour
 
     private IEnumerator BlendShakeValueRoutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.025f);
-        float shake = 0.25f;
+        WaitForSeconds wait = new WaitForSeconds(shakeIntensity / 10f);
+        float shake = shakeIntensity;
         while (shake >= 0)
         {
-            shake -= 0.025f;
+            shake -= (shakeIntensity / 10f);
             mat.SetFloat("shake", shake);
             yield return wait;
         }

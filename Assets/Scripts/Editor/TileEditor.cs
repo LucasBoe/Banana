@@ -39,11 +39,13 @@ public class TileEditor : Editor
                 Util.DebugDrawCross(point, Color.green, 0.5f, lifetime: 3f);
                 Room t = (target as Room);
                 Vector2Int tile = t.RemoveOffset(point);
+
                 if (isInRazorMode)
                     t.MapData.RemoveTileAt(tile);
                 else
                     t.MapData.AddAirAt(tile);
-                t.UpdateMesh();
+
+                t.GetComponent<RoomMeshCreator>().UpdateMesh(t.MapData);
             }
         }
     }

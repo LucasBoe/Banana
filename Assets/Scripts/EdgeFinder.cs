@@ -17,15 +17,15 @@ public class EdgeFinder : MonoBehaviour
 
     private IEnumerator FindRoutine()
     {
-        for (int x = 0; x < mapData.map.Size.x; x++)
+        for (int x = 0; x < mapData.Array.Size.x; x++)
         {
             int y = 0;
 
 
-            while (!mapData.map.Get(x, y) && y < mapData.map.Size.y)
+            while (!mapData.Array.Get(x, y) && y < mapData.Array.Size.y)
                 y++;
 
-            if (y < mapData.map.Size.y)
+            if (y < mapData.Array.Size.y)
             {
                 CreatePoint(x, y);
             }
@@ -35,7 +35,7 @@ public class EdgeFinder : MonoBehaviour
 
     private Vector2 CreatePoint(int x, int y)
     {
-        Vector2 point = new Vector2(mapData.start.x + x, mapData.start.y + y);
+        Vector2 point = new Vector2(mapData.Array.Offset.x + x, mapData.Array.Offset.y + y);
         Util.DebugDrawCross((Vector3)point + 1.5f * Vector3.back, Color.yellow, 0.25f, 10f);
         return point;
     }

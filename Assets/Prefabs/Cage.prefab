@@ -299,6 +299,7 @@ MonoBehaviour:
   meshes:
   - {fileID: 40116367468696807}
   - {fileID: 3613101558722882335}
+  shakeIntensity: 0.1
 --- !u!1001 &1417505456265428941
 PrefabInstance:
   m_ObjectHideFlags: 0
