@@ -6,7 +6,7 @@ using UnityEngine;
 [CustomEditor(typeof(Room))]
 public class TileEditor : Editor
 {
-    bool isInRazorMode;
+    bool isInRazorMode = true;
 
     void OnSceneGUI()
     {

@@ -52,7 +52,49 @@ public class MapData
 
     internal void RemoveEmptyTiles()
     {
-        //
+        int minX = 1;
+        while (CheckAxis(false, true, minX, Array.Size.y) && minX < Array.Size.x)
+            minX++;
+
+        int maxX = Array.Size.x - 1;
+        while (CheckAxis(false, true, maxX, Array.Size.y) && maxX > 0)
+            maxX--;
+
+        int minY = 1;
+        while (CheckAxis(true, false, minY, Array.Size.x) && minY < Array.Size.x)
+            minY++;
+
+        int maxY = Array.Size.y - 1;
+        while (CheckAxis(true, false, maxY, Array.Size.x) && maxY > 0)
+            maxY--;
+
+        //add back borders
+        minX -= 1; maxX += 2; minY -= 1; maxY += 2;
+
+        Vector2Int newMin = new Vector2Int(minX, minY) + Array.Offset;
+        Vector2Int newMax = new Vector2Int(maxX, maxY) + Array.Offset;
+
+        Array = CreateNewMapWithSize(Array.Offset, newMin, newMax - newMin);
+    }
+
+    private bool CheckAxis(bool checkX, bool checkY, int staticAxisValue, int dynamicAxisMax)
+    {
+        if (checkX)
+        {
+            for (int dynamicAxisValue = 1; dynamicAxisValue < dynamicAxisMax; dynamicAxisValue++)
+            {
+                if (Array.Get(dynamicAxisValue, staticAxisValue)) return false;
+            }
+        }
+        else if (checkY)
+        {
+            for (int dynamicAxisValue = 1; dynamicAxisValue < dynamicAxisMax; dynamicAxisValue++)
+            {
+                if (Array.Get(staticAxisValue, dynamicAxisValue)) return false;
+            }
+        }
+
+        return true;
     }
 
     public void RemoveTileAt(Vector2Int local)
