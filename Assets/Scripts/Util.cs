@@ -407,6 +407,10 @@ public static class Util
     {
         return collision.CompareTag("Player");
     }
+    public static bool IsHelper(this Collider2D collision)
+    {
+        return collision.CompareTag("Helper");
+    }
 
     public static bool IsEnemy(this Collider2D collision)
     {

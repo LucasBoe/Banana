@@ -12,15 +12,20 @@ public class Portal : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!Active || !collision.IsPlayer() || target == null) return;
+        if (!Active || !(IsTeleportable(collision)) || target == null) return;
 
-        Teleport(collision.gameObject,target);
+        Teleport(collision.gameObject, target);
     }
 
-    private void Teleport(GameObject player, Portal target)
+    private static bool IsTeleportable(Collider2D collision)
+    {
+        return collision.IsPlayer() || collision.IsHelper();
+    }
+
+    private void Teleport(GameObject toTeleport, Portal target)
     {
         target.Active = false;
-        player.transform.position = target.transform.position;
+        toTeleport.transform.position = target.transform.position;
         target.TeleportTo();
     }
 
@@ -31,7 +36,7 @@ public class Portal : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (!collision.IsPlayer()) return;
+        if (!IsTeleportable(collision)) return;
 
         Active = true;
     }
