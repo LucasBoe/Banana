@@ -50,7 +50,7 @@ public class TileData
         }
     }
 
-    internal void RemoveEmptyTiles()
+    public void RemoveEmptyTiles()
     {
         int minX = 1;
         while (CheckAxis(false, true, minX, Array.Size.y) && minX < Array.Size.x)
@@ -73,6 +73,8 @@ public class TileData
 
         Vector2Int newMin = new Vector2Int(minX, minY) + Array.Offset;
         Vector2Int newMax = new Vector2Int(maxX, maxY) + Array.Offset;
+
+        if (newMin == Array.Offset && newMax == (Array.Offset + Array.Size)) return;
 
         Array = CreateNewMapWithSize(Array.Offset, newMin, newMax - newMin);
     }
@@ -101,6 +103,10 @@ public class TileData
     {
         if (IsInsidePerimeter(local.x, local.y))
             Array.Set(local.x, local.y, false);
+    }
+    public bool IsBorderTile(Vector2Int local)
+    {
+        return !IsInsidePerimeterBorder(local.x, local.y);
     }
 
     private void ResizeToFit(Vector2Int local)

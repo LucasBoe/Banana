@@ -48,11 +48,6 @@ public class Room : MonoBehaviour
         return TileData.GetAirAt(RemoveOffset(pos));
     }
 
-    [ContextMenu("RemoveEmptyTiles")]
-    public void RemoveEmptyTiles()
-    {
-        TileData.RemoveEmptyTiles();
-    }
     private List<T> AddIfMatchesTag<T>(List<T> portals, RoomInfo info, string tag)
     {
         if (info.CompareTag(tag))

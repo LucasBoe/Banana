@@ -44,7 +44,11 @@ public class RoomEditor : Editor
 
 
                 if (isInRazorMode)
+                {
                     room.TileData.RemoveTileAt(tile);
+                    if (room.TileData.IsBorderTile(tile))
+                        room.TileData.RemoveEmptyTiles();
+                }
                 else
                     room.TileData.AddAirAt(tile);
 
