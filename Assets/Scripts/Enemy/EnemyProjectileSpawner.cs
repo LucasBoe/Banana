@@ -29,7 +29,7 @@ public class EnemyProjectileSpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (target != null)
+        if (target != null && !target.IsNull)
         {
             Vector2 dir = (target.Position - (Vector2)transform.position).normalized;
             transform.up = dir;

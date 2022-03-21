@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IEnemyCombatTarget
 {
     Vector2 Position { get; }
+    bool IsNull { get; }
 }

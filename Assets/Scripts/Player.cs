@@ -12,6 +12,8 @@ public class Player : MonoBehaviour, IEnemyCombatTarget
 
     public Vector2 Position => transform.position;
 
+    public bool IsNull => Equals(null);
+
     private void FixedUpdate()
     {
         Vector2 position = transform.position;

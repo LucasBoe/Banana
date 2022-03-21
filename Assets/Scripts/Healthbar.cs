@@ -22,13 +22,23 @@ public class Healthbar : MonoBehaviour
     private void OnEnable()
     {
         if (health != null)
+        {
             health.ChangedHealth += OnChangedHealth;
+            health.Die += DestroyHealthbar;
+        }
     }
 
     private void OnDisable()
     {
         if (health != null)
+        {
             health.ChangedHealth -= OnChangedHealth;
+            health.Die -= DestroyHealthbar;
+        }
+    }
+    private void DestroyHealthbar()
+    {
+        Destroy(gameObject);
     }
     private void OnChangedHealth(float relative)
     {

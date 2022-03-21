@@ -18,12 +18,17 @@ public class Enemy : MonoBehaviour, IPathTarget
 
         if (targets.Count > 0)
         {
-            IEnemyCombatTarget current = targets.OrderBy(t => Vector2.Distance(transform.position, t.Position)).First();
-            SetEnemyState?.Invoke(EnemyState.Attack, current);
-        } else
-        {
-            SetEnemyState?.Invoke(EnemyState.Idle, null);
+            IEnumerable<IEnemyCombatTarget> alive = targets.Where(t => !t.IsNull);
+
+            if (alive.Count() > 0)
+            {
+                IEnemyCombatTarget current = alive.OrderBy(t => Vector2.Distance(transform.position, t.Position)).First();
+                SetEnemyState?.Invoke(EnemyState.Attack, current);
+                return;
+            }
         }
+
+        SetEnemyState?.Invoke(EnemyState.Idle, null);
     }
 }
 public enum EnemyState

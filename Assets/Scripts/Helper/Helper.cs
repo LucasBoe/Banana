@@ -23,6 +23,8 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     public System.Action<HelperState> ChangedState;
     public Vector2 Position => transform.position;
 
+    public bool IsNull => Equals(null);
+
     private void OnEnable()
     {
         portalUser.TeleportFinished += MoveToNewTarget;
@@ -50,6 +52,8 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     }
     public void MoveToNewTarget()
     {
+        Debug.LogWarning("MoveToNewTarget...");
+
         Transform target = targetModule.GetTarget();
         if (target != null)
         {
@@ -65,8 +69,9 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     }
     private void OnDie()
     {
-        moveModule.StopMoving();
+        moveModule.DisableMovementAndCollsion();
         SetState(HelperState.Dead);
+        Destroy(this);
     }
 
     private void SetState(HelperState newState)
@@ -105,6 +110,7 @@ namespace HelperModules
         public void StopMoving()
         {
             path = null;
+            rigidbody.velocity = Vector2.zero;
             StopMove?.Invoke();
             targetReachedCallback?.Invoke();
         }
@@ -130,6 +136,13 @@ namespace HelperModules
             {
                 rigidbody.velocity = Vector2.zero;
             }
+        }
+
+        internal void DisableMovementAndCollsion()
+        {
+            StopMoving();
+            rigidbody.simulated = false;
+            ownColliderToIgnoreForPathfinding.enabled = false;
         }
     }
 
