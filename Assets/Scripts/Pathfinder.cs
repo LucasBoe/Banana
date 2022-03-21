@@ -1,95 +1,81 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using UnityEngine;
 
 public class Pathfinder : SingletonBehaviour<Pathfinder>
 {
     [SerializeField] Transform target;
-    [SerializeField] Room room;
-    private void OnDrawGizmosSelected()
+
+    public List<Vector2> GetPathTo(Vector2 start, Vector2 end, Room room, Collider2D[] toIgnore = null)
     {
-        if (target == null) return;
-        if (!IsTargetInsideRoom(target, room)) return;
-
-        Vector2 pos = transform.position;
-        Gizmos.DrawSphere(pos, 0.25f);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(target.position, 0.25f);
-
-        float distance = Vector2.Distance(pos, target.position);
-        int steps = 0;
-        float angleOffset = 0f;
+        Debug.Log("Get path for" + toIgnore[0]);
 
         List<Vector2> points = new List<Vector2>();
+        List<Collider2D> ignore = new List<Collider2D>(toIgnore);
 
-        while (steps < 100 && distance > 0.1f)
+        float distance = Vector2.Distance(start, end);
+        int stepCounter = 0;
+        float angleOffset = 0f;
+
+
+        while (stepCounter < 100 && distance > 0.1f)
         {
-            distance = Vector2.Distance(pos, target.position);
+            distance = Vector2.Distance(start, end);
 
-            Vector2 directVector = ((Vector2)target.position - pos).normalized;
+            Vector2 directVector = (end - start).normalized;
             Vector2 roatedVector = directVector.Rotate(angleOffset);
-            Vector2 toCheck = pos + roatedVector * (distance < 0.5f ? 0.1f : 0.5f);
+            Vector2 toCheck = start + roatedVector * (distance < 0.5f ? 0.1f : 0.25f);
 
-            bool isAirAtDirect = CheckPosition(toCheck);
-            Gizmos.color = isAirAtDirect ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(toCheck, 0.1f);
+            bool isAirAtDirect = CheckPosition(toCheck, ignore, room);
+            Util.DebugDrawCircle(toCheck, isAirAtDirect ? Color.green : Color.red, 0.25f, lifetime: 2);
 
             if (isAirAtDirect)
             {
                 points.Add(toCheck);
-                pos = toCheck;
+                start = toCheck;
                 angleOffset = 0;
-
             }
             else
             {
                 if (angleOffset > 0)
-                    angleOffset = - angleOffset;
+                    angleOffset = -angleOffset;
                 else
-                {
                     angleOffset = (-angleOffset + 45f);
-                }
             }
-
-            steps++;
+            stepCounter++;
         }
 
         for (int i = 1; i < 6; i++)
-        {
-            CleanUp(points, i);
-        }
+            CleanUp(points, i, ignore, room);
+
 
         for (int i = 1; i < points.Count; i++)
-            Gizmos.DrawLine(points[i - 1], points[i]);
+            Debug.DrawLine(points[i - 1], points[i], Color.green, 2);
 
-#if UNITY_EDITOR
-        Handles.Label(transform.position, steps.ToString());
-#endif
+        return points;
     }
 
-    private bool CheckPosition(Vector2 toCheck)
+    private bool CheckPosition(Vector2 toCheck, List<Collider2D> toIgnore, Room room)
     {
-        return room.IsInside(toCheck + Vector2.up * 0.25f) && room.IsInside(toCheck + Vector2.down * 0.25f) && room.IsInside(toCheck + Vector2.right * 0.25f) && room.IsInside(toCheck + Vector2.left * 0.25f);
+        Collider2D collider = Physics2D.OverlapBox(toCheck, new Vector2(0.125f, 0.125f), 0);
+        return room.IsInside(toCheck + Vector2.up * 0.25f) && room.IsInside(toCheck + Vector2.down * 0.25f) && room.IsInside(toCheck + Vector2.right * 0.25f) && room.IsInside(toCheck + Vector2.left * 0.25f) && (collider == null || toIgnore.Contains(collider));
     }
 
-    private bool CheckPosition(Vector2 start, Vector2 end)
+    private bool CheckLine(Vector2 start, Vector2 end, List<Collider2D> toIgnore, Room room)
     {
         int intervalls = Mathf.RoundToInt(Vector2.Distance(start, end) * 2);
         for (int i = 0; i < intervalls; i++)
         {
             Vector2 point = Vector2.Lerp(start, end, i / (float)(intervalls));
-            if (!CheckPosition(point))
+            if (!CheckPosition(point, toIgnore, room))
                 return false;
         }
 
         return true;
     }
 
-    private void CleanUp(List<Vector2> points, float maxDistance)
+    private void CleanUp(List<Vector2> points, float maxDistance, List<Collider2D> toIgnore, Room room)
     {
         List<Vector2> toRemove = new List<Vector2>();
 
@@ -98,16 +84,11 @@ public class Pathfinder : SingletonBehaviour<Pathfinder>
             Vector2 before = points[i - 1];
             Vector2 after = points[i + 1];
 
-            if (Vector2.Distance(before, after) < maxDistance && CheckPosition(before, after))
+            if (Vector2.Distance(before, after) < maxDistance && CheckLine(before, after, toIgnore, room))
                 toRemove.Add(points[i]);
         }
 
         foreach (Vector2 point in toRemove)
             points.Remove(point);
-    }
-
-    private bool IsTargetInsideRoom(Transform target, Room room)
-    {
-        return room.IsInside(target.position);
     }
 }

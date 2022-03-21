@@ -74,10 +74,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveModule:
+    roomInfo: {fileID: 8669413604284495519}
     transform: {fileID: 7443072189839584933}
     rigidbody: {fileID: 1289531252}
-    target: {fileID: 0}
     speed: 1
+    ownColliderToIgnoreForPathfinding: {fileID: 5818097344625774855}
   targetModule:
     target: {fileID: 0}
     roomInfo: {fileID: 8669413604284495519}

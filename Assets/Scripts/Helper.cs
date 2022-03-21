@@ -64,40 +64,48 @@ namespace HelperModules
     [System.Serializable]
     public class HelperMoveModule
     {
+        [SerializeField] RoomInfo roomInfo;
         [SerializeField] Transform transform;
         [SerializeField] Rigidbody2D rigidbody;
-        [SerializeField] Transform target;
         [SerializeField] float speed;
+        [SerializeField] Collider2D ownColliderToIgnoreForPathfinding;
 
         public System.Action StartMove;
         public System.Action StopMove;
+
         private System.Action targetReachedCallback;
+        private List<Vector2> path;
 
         public void StartMoving(Transform target, System.Action targetReachedCallback)
         {
-            this.target = target;
+            path = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
             StartMove?.Invoke();
             this.targetReachedCallback = targetReachedCallback;
         }
 
         public void StopMoving()
         {
-            this.target = null;
+            this.path = null;
             StopMove?.Invoke();
             targetReachedCallback?.Invoke();
         }
 
         public void Update()
         {
-            if (target != null)
+            if (path != null)
             {
-                Vector2 dir = target.position - transform.position;
-                Vector2 vel = (dir).normalized * speed;
-                rigidbody.velocity = vel;
-                transform.up = rigidbody.velocity.normalized;
-
-                if (dir.magnitude < 0.5f)
+                if (path.Count == 0)
                     StopMoving();
+                else
+                {
+                    Vector2 dir = path[0] - (Vector2)transform.position;
+                    Vector2 vel = (dir).normalized * speed;
+                    rigidbody.velocity = vel;
+                    transform.up = rigidbody.velocity.normalized;
+
+                    if (dir.magnitude < 0.25f)
+                        path.RemoveAt(0);
+                }
             }
             else
             {
@@ -119,19 +127,17 @@ namespace HelperModules
         {
             if (target == null) return null;
 
-            Debug.Log("Room is: " + roomInfo.Room);
-
-            bool targetIsInsideSameRoom = roomInfo.Room.IsInside(target.transform.position);
+            bool targetIsInsideSameRoom = roomInfo.Room.IsInside(target.TargetTransform.position);
 
             IsFinalTarget = targetIsInsideSameRoom;
 
             if (targetIsInsideSameRoom)
-                return target.transform;
+                return target.TargetTransform;
 
             bool roomHasPortal = roomInfo.Room.Portals.Count > 0;
 
             if (roomHasPortal)
-                return roomInfo.Room.Portals[0].transform;
+                return roomInfo.Room.Portals[0].TargetTransform;
 
             return null;
         }

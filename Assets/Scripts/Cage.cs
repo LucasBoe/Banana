@@ -6,6 +6,8 @@ public class Cage : MonoBehaviour
 {
     [SerializeField] RoomInfo roomInfo;
     [SerializeField] Helper contains;
+    [SerializeField] Collider2D toDisable;
+    [SerializeField] GameObject toEnable;
 
     public System.Action Open;
     bool active = false;
@@ -22,6 +24,8 @@ public class Cage : MonoBehaviour
 
     private void OpenCage()
     {
+        toDisable.enabled = false;
+        toEnable.SetActive(true);
         active = true;
         contains.transform.parent = roomInfo.Room.transform;
         contains.Free();

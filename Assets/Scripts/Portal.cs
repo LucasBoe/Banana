@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Portal : MonoBehaviour
+public class Portal : MonoBehaviour, IPathTarget
 {
     [SerializeField] public Transform TeleportPosition;
     [SerializeField] Portal target;
@@ -13,6 +13,7 @@ public class Portal : MonoBehaviour
     public System.Action Teleported;
     public Room Room => roomInfo.Room;
 
+    public Transform TargetTransform => TeleportPosition;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
