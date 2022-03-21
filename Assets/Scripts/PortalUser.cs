@@ -5,12 +5,12 @@ using UnityEngine;
 public class PortalUser : MonoBehaviour
 {
     public System.Action<Room, Room> ChangeRoom;
-    public System.Action<Room> TeleportFinished;
+    public System.Action TeleportFinished;
 
     public void Teleport(Portal from, Portal to)
     {
         ChangeRoom?.Invoke(from.Room, to.Room);
         transform.position = to.TeleportPosition.position;
-        TeleportFinished?.Invoke(to.Room);
+        TeleportFinished?.Invoke();
     }
 }

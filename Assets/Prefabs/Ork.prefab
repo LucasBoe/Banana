@@ -82,7 +82,9 @@ MonoBehaviour:
   targetModule:
     target: {fileID: 0}
     roomInfo: {fileID: 8669413604284495519}
+    IsInCage: 0
     IsFinalTarget: 0
+    Cage: {fileID: 0}
   animatorModule:
     animator: {fileID: 7443072189918583153}
   portalUser: {fileID: 6944276837928527045}
@@ -233,3 +235,24 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4647892237117491782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7749133004805213976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8108995f06ec19b48b06572bcf9fc939, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  helper: {fileID: 6076958978463722845}
+  pairs:
+  - State: 0
+    AnimatorStateName: cage
+  - State: 1
+    AnimatorStateName: walk
+  - State: 2
+    AnimatorStateName: attack
+  animator: {fileID: 7443072189918583153}

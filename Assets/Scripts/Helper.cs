@@ -4,6 +4,13 @@ using UnityEngine;
 using HelperModules;
 using System;
 
+public enum HelperState
+{
+    Idle,
+    Walk,
+    Attack,
+}
+
 public class Helper : MonoBehaviour
 {
     [SerializeField] HelperMoveModule moveModule;
@@ -11,6 +18,17 @@ public class Helper : MonoBehaviour
     [SerializeField] AnimatorModule animatorModule;
     [SerializeField] PortalUser portalUser;
 
+    private HelperState state;
+    public System.Action<HelperState> ChangedState;
+    private void OnEnable()
+    {
+        portalUser.TeleportFinished += MoveToNewTarget;
+    }
+
+    private void OnDisable()
+    {
+        portalUser.TeleportFinished += MoveToNewTarget;
+    }
     private void Awake()
     {
         Cage cage = GetComponentInParent<Cage>();
@@ -19,56 +37,36 @@ public class Helper : MonoBehaviour
         {
             targetModule.Cage = cage;
             targetModule.IsInCage = true;
+            SetState(HelperState.Idle);
+        }
+        else
+        {
+            MoveToNewTarget();
+        }
+    }
+    public void MoveToNewTarget()
+    {
+        Transform target = targetModule.GetTarget();
+        if (target != null)
+        {
+            moveModule.StartMoving(target, () =>
+            {
+                if (!targetModule.IsFinalTarget)
+                    MoveToNewTarget();
+                else
+                    SetState(HelperState.Attack);
+            });
+            SetState(HelperState.Walk);
         }
     }
 
-    private void OnEnable()
+    private void SetState(HelperState newState)
     {
-        moveModule.StartMove += () => animatorModule.PlayState("walk");
-        portalUser.TeleportFinished += OnTeleportFinished;
+        state = newState;
+        ChangedState?.Invoke(newState);
     }
+    private void FixedUpdate() => moveModule.Update();
 
-    private void OnDisable()
-    {
-        moveModule.StartMove -= () => animatorModule.PlayState("walk");
-        portalUser.TeleportFinished += OnTeleportFinished;
-    }
-
-    private void Start()
-    {
-        animatorModule.PlayState("cage");
-    }
-    public void Free()
-    {
-        Transform target = targetModule.GetTarget();
-        if (target != null)
-            moveModule.StartMoving(target, ReachedTarget);
-    }
-    public void ReachedTarget()
-    {
-        if (targetModule.IsFinalTarget)
-            animatorModule.PlayState("attack");
-        else
-            MoveToNewTarget();
-
-
-    }
-    private void OnTeleportFinished(Room room)
-    {
-        MoveToNewTarget();
-    }
-
-    private void MoveToNewTarget()
-    {
-        Transform target = targetModule.GetTarget();
-        if (target != null)
-            moveModule.StartMoving(target, ReachedTarget);
-    }
-
-    private void FixedUpdate()
-    {
-        moveModule.Update();
-    }
 }
 
 namespace HelperModules
@@ -85,10 +83,8 @@ namespace HelperModules
         public System.Action StartMove;
         public System.Action StopMove;
 
-
         private System.Action targetReachedCallback;
         private List<Vector2> path;
-
 
         public void StartMoving(Transform target, System.Action targetReachedCallback)
         {
@@ -99,7 +95,7 @@ namespace HelperModules
 
         public void StopMoving()
         {
-            this.path = null;
+            path = null;
             StopMove?.Invoke();
             targetReachedCallback?.Invoke();
         }
@@ -125,7 +121,6 @@ namespace HelperModules
             {
                 rigidbody.velocity = Vector2.zero;
             }
-
         }
     }
 
@@ -164,7 +159,7 @@ namespace HelperModules
                 Transform portalTransform = roomInfo.Room.Portals[0].TargetTransform;
 
                 Debug.Log("move to portal: " + portalTransform);
-                Util.DebugDrawCross(portalTransform.position, Color.red, 0.5f, lifetime:5f);
+                Util.DebugDrawCross(portalTransform.position, Color.red, 0.5f, lifetime: 5f);
 
                 return portalTransform;
             }

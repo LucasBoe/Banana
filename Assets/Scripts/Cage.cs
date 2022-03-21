@@ -31,7 +31,7 @@ public class Cage : MonoBehaviour, IPathTarget
         toEnable.SetActive(true);
         active = true;
         contains.transform.parent = roomInfo.Room.transform;
-        contains.Free();
+        contains.MoveToNewTarget();
         Open?.Invoke();
     }
 }
