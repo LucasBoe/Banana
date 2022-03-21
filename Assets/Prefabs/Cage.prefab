@@ -270,6 +270,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f136cc33f749d12418e4d1581f1ce1ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomInfo: {fileID: 4251162969963108119}
+  contains: {fileID: 5187667717226992272}
 --- !u!61 &5925225789238987163
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -294,7 +296,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9047619, y: 0.9047619}
   m_EdgeRadius: 0
 --- !u!114 &8918081326522263498
 MonoBehaviour:
@@ -389,3 +391,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1417505456265428941}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5187667717226992272 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6076958978463722845, guid: fd33cc2ed8cf45247b4e5758fbd4f41b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1417505456265428941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6ebc3cd4cb2674b993106a454a8a91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Cage : MonoBehaviour
 {
+    [SerializeField] RoomInfo roomInfo;
+    [SerializeField] Helper contains;
+
     public System.Action Open;
     bool active = false;
 
@@ -13,9 +16,15 @@ public class Cage : MonoBehaviour
             return;
 
         if (collision.collider.IsPlayer())
-        {
-            active = true;
-            Open?.Invoke();
-        }
+            OpenCage();
+        
+    }
+
+    private void OpenCage()
+    {
+        active = true;
+        contains.transform.parent = roomInfo.Room.transform;
+        contains.Free();
+        Open?.Invoke();
     }
 }

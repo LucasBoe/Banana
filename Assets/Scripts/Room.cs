@@ -17,13 +17,23 @@ public class Room : MonoBehaviour
         foreach (RoomInfo info in children)
         {
             info.Room = this;
-
-            Portals = AddIfMatchesTag(Portals, info, "Portal");
-            Enemys = AddIfMatchesTag(Enemys, info, "Enemy");
-            Players = AddIfMatchesTag(Players, info, "Player");
+            RegisterInfo(info);
         }
 
         RoomManager.Instance.RegisterRoom(this);
+    }
+    public void RegisterInfo(RoomInfo info)
+    {
+        Portals = AddIfMatchesTag(Portals, info, "Portal");
+        Enemys = AddIfMatchesTag(Enemys, info, "Enemy");
+        Players = AddIfMatchesTag(Players, info, "Player");
+    }
+
+    public void UnregisterInfo(RoomInfo info)
+    {
+        Portals = RemoveIfMatchesTag(Portals, info, "Portal");
+        Enemys = RemoveIfMatchesTag(Enemys, info, "Enemy");
+        Players = RemoveIfMatchesTag(Players, info, "Player");
     }
 
     public Vector2Int RemoveOffset(Vector3 point)
@@ -48,11 +58,19 @@ public class Room : MonoBehaviour
         return TileData.GetAirAt(RemoveOffset(pos));
     }
 
-    private List<T> AddIfMatchesTag<T>(List<T> portals, RoomInfo info, string tag)
+    private List<T> AddIfMatchesTag<T>(List<T> list, RoomInfo info, string tag)
     {
         if (info.CompareTag(tag))
-            portals.Add(info.GetComponent<T>());
+            list.Add(info.GetComponent<T>());
 
-        return portals;
+        return list;
+    }
+
+    private List<T> RemoveIfMatchesTag<T>(List<T> list, RoomInfo info, string tag)
+    {
+        if (info.CompareTag(tag))
+            list.Remove(info.GetComponent<T>());
+
+        return list;
     }
 }

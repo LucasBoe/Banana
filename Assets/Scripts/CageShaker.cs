@@ -41,9 +41,9 @@ public class CageShaker : MonoBehaviour
     {
         WaitForSeconds wait = new WaitForSeconds(shakeIntensity / 10f);
         float shake = shakeIntensity;
-        while (shake >= 0)
+        while (shake >= 0f)
         {
-            shake -= (shakeIntensity / 10f);
+            shake = Mathf.Clamp(shake-(shakeIntensity / 10f), 0f, 1f);
             mat.SetFloat("shake", shake);
             yield return wait;
         }

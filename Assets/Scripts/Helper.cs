@@ -9,6 +9,7 @@ public class Helper : MonoBehaviour
     [SerializeField] HelperMoveModule moveModule;
     [SerializeField] TargetModule targetModule;
     [SerializeField] AnimatorModule animatorModule;
+    [SerializeField] PortalUser portalUser;
 
     private void Awake()
     {
@@ -20,21 +21,36 @@ public class Helper : MonoBehaviour
     {
         moveModule.StartMove += () => animatorModule.PlayState("walk");
         moveModule.StopMove += () => animatorModule.PlayState("idle");
+        portalUser.TeleportFinished += OnTeleportFinished;
     }
 
     private void OnDisable()
     {
         moveModule.StartMove -= () => animatorModule.PlayState("walk");
         moveModule.StopMove -= () => animatorModule.PlayState("idle");
+        portalUser.TeleportFinished += OnTeleportFinished;
     }
 
     private void Start()
     {
+        animatorModule.PlayState("cage");
+    }
+    public void Free()
+    {
         Transform target = targetModule.GetTarget();
         if (target != null)
-            moveModule.StartMoving(target, () => animatorModule.PlayState("attack"));
-        else
-            animatorModule.PlayState("cage");
+            moveModule.StartMoving(target, ReachedTarget);
+    }
+    public void ReachedTarget()
+    {
+        if (targetModule.IsFinalTarget)
+            animatorModule.PlayState("attack");
+    }
+    private void OnTeleportFinished(Room room)
+    {
+        Transform target = targetModule.GetTarget();
+        if (target != null)
+            moveModule.StartMoving(target, ReachedTarget);
     }
 
     private void FixedUpdate()
@@ -94,11 +110,30 @@ namespace HelperModules
     [System.Serializable]
     public class TargetModule
     {
-        [SerializeField] Transform target;
+        [SerializeField] Enemy target;
+        [SerializeField] RoomInfo roomInfo;
+
+        public bool IsFinalTarget = false;
 
         public Transform GetTarget()
         {
-            return target;
+            if (target == null) return null;
+
+            Debug.Log("Room is: " + roomInfo.Room);
+
+            bool targetIsInsideSameRoom = roomInfo.Room.IsInside(target.transform.position);
+
+            IsFinalTarget = targetIsInsideSameRoom;
+
+            if (targetIsInsideSameRoom)
+                return target.transform;
+
+            bool roomHasPortal = roomInfo.Room.Portals.Count > 0;
+
+            if (roomHasPortal)
+                return roomInfo.Room.Portals[0].transform;
+
+            return null;
         }
     }
 

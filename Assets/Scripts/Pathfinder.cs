@@ -6,18 +6,14 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public class Pathfinder : MonoBehaviour
+public class Pathfinder : SingletonBehaviour<Pathfinder>
 {
     [SerializeField] Transform target;
     [SerializeField] Room room;
     private void OnDrawGizmosSelected()
     {
         if (target == null) return;
-
-        bool isTargetInsideRoom = IsTargetInsideRoom(target, room);
-
-        if (!isTargetInsideRoom) return;
-
+        if (!IsTargetInsideRoom(target, room)) return;
 
         Vector2 pos = transform.position;
         Gizmos.DrawSphere(pos, 0.25f);
@@ -27,13 +23,11 @@ public class Pathfinder : MonoBehaviour
         float distance = Vector2.Distance(pos, target.position);
         int steps = 0;
         float angleOffset = 0f;
-        float angleDirection = 1;
 
         List<Vector2> points = new List<Vector2>();
 
         while (steps < 100 && distance > 0.1f)
         {
-
             distance = Vector2.Distance(pos, target.position);
 
             Vector2 directVector = ((Vector2)target.position - pos).normalized;
@@ -110,11 +104,6 @@ public class Pathfinder : MonoBehaviour
 
         foreach (Vector2 point in toRemove)
             points.Remove(point);
-    }
-
-    private Vector2 ToGrid(Vector2 position)
-    {
-        return new Vector2(Mathf.Round(position.x + 0.5f) - 0.5f, Mathf.Round(position.y + 0.5f) - 0.5f);
     }
 
     private bool IsTargetInsideRoom(Transform target, Room room)

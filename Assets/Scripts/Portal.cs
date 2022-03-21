@@ -5,38 +5,36 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
+    [SerializeField] public Transform TeleportPosition;
     [SerializeField] Portal target;
+    [SerializeField] RoomInfo roomInfo;
 
     public bool Active = true;
     public System.Action Teleported;
+    public Room Room => roomInfo.Room;
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!Active || !(IsTeleportable(collision)) || target == null) return;
+        if (!Active || target == null) return;
 
-        Teleport(collision.gameObject, target);
+        PortalUser user = collision.GetComponent<PortalUser>();
+
+        if (user == null) return;
+
+        Teleport(user);
     }
 
-    private static bool IsTeleportable(Collider2D collision)
-    {
-        return collision.IsPlayer() || collision.IsHelper();
-    }
-
-    private void Teleport(GameObject toTeleport, Portal target)
+    private void Teleport(PortalUser user)
     {
         target.Active = false;
-        toTeleport.transform.position = target.transform.position;
-        target.TeleportTo();
-    }
-
-    private void TeleportTo()
-    {
+        user.Teleport(this, target);
         Teleported?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (!IsTeleportable(collision)) return;
+        if (collision.GetComponent<PortalUser>() == null) return;
 
         Active = true;
     }
