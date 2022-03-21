@@ -9,6 +9,7 @@ public enum HelperState
     Idle,
     Walk,
     Attack,
+    Dead,
 }
 
 public class Helper : MonoBehaviour, IEnemyCombatTarget
@@ -16,6 +17,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     [SerializeField] HelperMoveModule moveModule;
     [SerializeField] TargetModule targetModule;
     [SerializeField] PortalUser portalUser;
+    [SerializeField] Health health;
 
     private HelperState state;
     public System.Action<HelperState> ChangedState;
@@ -24,11 +26,13 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     private void OnEnable()
     {
         portalUser.TeleportFinished += MoveToNewTarget;
+        health.Die += OnDie;
     }
 
     private void OnDisable()
     {
-        portalUser.TeleportFinished += MoveToNewTarget;
+        portalUser.TeleportFinished -= MoveToNewTarget;
+        health.Die -= OnDie;
     }
     private void Awake()
     {
@@ -58,6 +62,11 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
             });
             SetState(HelperState.Walk);
         }
+    }
+    private void OnDie()
+    {
+        moveModule.StopMoving();
+        SetState(HelperState.Dead);
     }
 
     private void SetState(HelperState newState)

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 652184195549167938}
   m_Layer: 0
   m_Name: FireballProjectile
-  m_TagString: Untagged
+  m_TagString: DamageHelper
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,6 +119,7 @@ MonoBehaviour:
   deathPrefab: {fileID: 2018651683207688368, guid: 4988b9df9cfccc040b671145bca697e6,
     type: 3}
   particleSystem: {fileID: 652184195549167966}
+  damage: 20
 --- !u!50 &652184195549167965
 Rigidbody2D:
   serializedVersion: 4

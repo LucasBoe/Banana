@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour, IPathTarget
     [SerializeField] RoomInfo roomInfo;
     public Transform TargetTransform => transform;
 
+
     public System.Action<EnemyState, IEnemyCombatTarget> SetEnemyState;
 
     private void FixedUpdate()
