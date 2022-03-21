@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayerModules;
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IEnemyCombatTarget
 {
     [SerializeField] PlayerMoveModule moveModule;
     [SerializeField] PlayerRoomModule roomModule;
     [SerializeField] PlayerInputModule inputModule;
     [SerializeField] PlayerAnimationModule animationModule;
+
+    public Vector2 Position => transform.position;
 
     private void FixedUpdate()
     {

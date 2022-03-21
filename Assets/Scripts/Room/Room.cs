@@ -7,9 +7,10 @@ public class Room : MonoBehaviour
 {
     [SerializeField] public TileData TileData;
 
-    public List<Portal> Portals;
-    public List<Enemy> Enemys;
-    public List<Player> Players;
+    public List<Portal> Portals = new List<Portal>();
+    public List<Enemy> Enemys = new List<Enemy>();
+    public List<Player> Players = new List<Player>();
+    public List<IEnemyCombatTarget> EnemyCombatTargets = new List<IEnemyCombatTarget>();
 
     private void Awake()
     {
@@ -27,6 +28,8 @@ public class Room : MonoBehaviour
         Portals = AddIfMatchesTag(Portals, info, "Portal");
         Enemys = AddIfMatchesTag(Enemys, info, "Enemy");
         Players = AddIfMatchesTag(Players, info, "Player");
+        EnemyCombatTargets = AddIfMatchesTag(EnemyCombatTargets, info, "Player");
+        EnemyCombatTargets = AddIfMatchesTag(EnemyCombatTargets, info, "Helper");
     }
 
     public void UnregisterInfo(RoomInfo info)
@@ -34,6 +37,8 @@ public class Room : MonoBehaviour
         Portals = RemoveIfMatchesTag(Portals, info, "Portal");
         Enemys = RemoveIfMatchesTag(Enemys, info, "Enemy");
         Players = RemoveIfMatchesTag(Players, info, "Player");
+        EnemyCombatTargets = RemoveIfMatchesTag(EnemyCombatTargets, info, "Player");
+        EnemyCombatTargets = RemoveIfMatchesTag(EnemyCombatTargets, info, "Helper");
     }
 
     public Vector2Int RemoveOffset(Vector3 point)

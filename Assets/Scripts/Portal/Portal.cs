@@ -30,7 +30,7 @@ public class Portal : MonoBehaviour, IPathTarget
     {
         target.Active = false;
         user.Teleport(this, target);
-        Teleported?.Invoke();
+        target.Teleported?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)

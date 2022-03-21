@@ -11,7 +11,7 @@ public enum HelperState
     Attack,
 }
 
-public class Helper : MonoBehaviour
+public class Helper : MonoBehaviour, IEnemyCombatTarget
 {
     [SerializeField] HelperMoveModule moveModule;
     [SerializeField] TargetModule targetModule;
@@ -19,6 +19,8 @@ public class Helper : MonoBehaviour
 
     private HelperState state;
     public System.Action<HelperState> ChangedState;
+    public Vector2 Position => transform.position;
+
     private void OnEnable()
     {
         portalUser.TeleportFinished += MoveToNewTarget;
@@ -34,8 +36,7 @@ public class Helper : MonoBehaviour
 
         if (cage != null)
         {
-            targetModule.Cage = cage;
-            targetModule.IsInCage = true;
+            targetModule.SetCage(cage);
             SetState(HelperState.Idle);
         }
         else
@@ -129,38 +130,39 @@ namespace HelperModules
         [SerializeField] Enemy target;
         [SerializeField] RoomInfo roomInfo;
 
-        public bool IsInCage = false;
-        public bool IsFinalTarget = false;
+        public bool IsFinalTarget => isFinalTarget;
+
+        private bool isInCage = false;
+        private bool isFinalTarget = false;
         public Cage Cage;
+
+        public void SetCage(Cage cage)
+        {
+            isInCage = true;
+            Cage = cage;
+        }
 
         public Transform GetTarget()
         {
-            if (target == null) return null;
+            if (target == null)
+                return null;
 
-            if (IsInCage)
+            if (isInCage)
             {
-                IsInCage = false;
-                IsFinalTarget = false;
+                isInCage = false;
                 return Cage.TargetTransform;
             }
 
-            bool targetIsInsideSameRoom = roomInfo.Room.IsInside(target.TargetTransform.position);
-
-            IsFinalTarget = targetIsInsideSameRoom;
-
-            if (targetIsInsideSameRoom)
-                return target.TargetTransform;
-
-            bool roomHasPortal = roomInfo.Room.Portals.Count > 0;
-
-            if (roomHasPortal)
+            if (roomInfo.Room.IsInside(target.TargetTransform.position))
             {
-                Transform portalTransform = roomInfo.Room.Portals[0].TargetTransform;
-
-                Debug.Log("move to portal: " + portalTransform);
-                Util.DebugDrawCross(portalTransform.position, Color.red, 0.5f, lifetime: 5f);
-
-                return portalTransform;
+                isFinalTarget = true;
+                return target.TargetTransform;
+            }
+            else
+            {
+                bool roomHasPortal = roomInfo.Room.Portals.Count > 0;
+                if (roomHasPortal)
+                    return roomInfo.Room.Portals[0].TargetTransform;
             }
 
             return null;

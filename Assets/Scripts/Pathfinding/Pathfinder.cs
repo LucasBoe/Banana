@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Pathfinder : SingletonBehaviour<Pathfinder>
 {
-    [SerializeField] Transform target;
-
     public List<Vector2> GetPathTo(Vector2 start, Vector2 end, Room room, Collider2D[] toIgnore = null)
     {
         Debug.Log("Get path for" + toIgnore[0]);
