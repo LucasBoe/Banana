@@ -5063,12 +5063,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2735884848316691440}
   - component: {fileID: 2735884848316691441}
+  - component: {fileID: 882686953599605036}
   - component: {fileID: 2735884848316691443}
   - component: {fileID: 2735884848316691442}
-  - component: {fileID: 3909894836456304838}
   m_Layer: 0
   m_Name: Portal
-  m_TagString: Untagged
+  m_TagString: Portal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5108,6 +5108,19 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.25}
   serializedVersion: 2
   m_Radius: 0.25
+--- !u!114 &882686953599605036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2735884848316691454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 357c50d26ba373b4281c9f1feb695da3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Room: {fileID: 0}
 --- !u!114 &2735884848316691443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5141,19 +5154,6 @@ MonoBehaviour:
   - {fileID: 2735884847781695598}
   portal: {fileID: 2735884848316691443}
   particleSystem: {fileID: 2735884848247174562}
---- !u!114 &3909894836456304838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2735884848316691454}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357c50d26ba373b4281c9f1feb695da3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Room: {fileID: 0}
 --- !u!1 &3442587516417199971
 GameObject:
   m_ObjectHideFlags: 0

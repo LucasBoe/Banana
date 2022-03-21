@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(Room))]
-public class TileEditor : Editor
+public class RoomEditor : Editor
 {
     bool isInRazorMode = true;
 
@@ -37,15 +37,20 @@ public class TileEditor : Editor
             {
                 Vector3 point = ray.GetPoint(rayDistance);
                 Util.DebugDrawCross(point, Color.green, 0.5f, lifetime: 3f);
-                Room t = (target as Room);
-                Vector2Int tile = t.RemoveOffset(point);
+                Room room = (target as Room);
+
+                Vector2Int tile = room.RemoveOffset(point);
+
+
 
                 if (isInRazorMode)
-                    t.TileData.RemoveTileAt(tile);
+                    room.TileData.RemoveTileAt(tile);
                 else
-                    t.TileData.AddAirAt(tile);
+                    room.TileData.AddAirAt(tile);
 
-                t.GetComponent<RoomMeshCreator>().UpdateMesh(t.TileData);
+                room.GetComponent<RoomMeshCreator>().UpdateMesh(room.TileData);
+
+                EditorUtility.SetDirty(room);
             }
         }
     }

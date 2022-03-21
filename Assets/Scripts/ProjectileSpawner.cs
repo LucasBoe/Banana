@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ProjectileSpawner : MonoBehaviour
 {
-    [SerializeField] Room room;
+    [SerializeField] RoomInfo roomInfo;
     [SerializeField] Projectile prefab;
     [SerializeField] Transform target;
     [SerializeField] float intervall = 1f;
@@ -21,7 +21,7 @@ public class ProjectileSpawner : MonoBehaviour
         {
             yield return wait;
             Vector2 dir = (target.position - transform.position).normalized;
-            Instantiate(prefab, transform.position, Quaternion.identity).Shoot(room, dir);
+            Instantiate(prefab, transform.position, Quaternion.identity).Shoot(roomInfo.Room, dir);
         }
     }
 }
