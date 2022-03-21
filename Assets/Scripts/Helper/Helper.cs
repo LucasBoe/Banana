@@ -15,7 +15,6 @@ public class Helper : MonoBehaviour
 {
     [SerializeField] HelperMoveModule moveModule;
     [SerializeField] TargetModule targetModule;
-    [SerializeField] AnimatorModule animatorModule;
     [SerializeField] PortalUser portalUser;
 
     private HelperState state;
@@ -165,19 +164,6 @@ namespace HelperModules
             }
 
             return null;
-        }
-    }
-
-    [System.Serializable]
-    public class AnimatorModule
-    {
-        [SerializeField] Animator animator;
-
-        public void PlayState(string statename)
-        {
-            Debug.Log("Play " + statename);
-
-            animator.Play(statename);
         }
     }
 }
