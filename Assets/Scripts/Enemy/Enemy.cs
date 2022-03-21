@@ -7,13 +7,35 @@ using UnityEngine;
 public class Enemy : MonoBehaviour, IPathTarget
 {
     [SerializeField] RoomInfo roomInfo;
+    [SerializeField] Health health;
+    [SerializeField] Collider2D collider2D;
     public Transform TargetTransform => transform;
-
 
     public System.Action<EnemyState, IEnemyCombatTarget> SetEnemyState;
 
+    private bool dead = false;
+
+    private void OnEnable()
+    {
+        health.Die += OnDie;
+    }
+
+    private void OnDisable()
+    {
+        health.Die += OnDie;
+    }
+    private void OnDie()
+    {
+        SetEnemyState?.Invoke(EnemyState.Dead, null);
+        collider2D.enabled = false;
+        Destroy(this);
+    }
+
     private void FixedUpdate()
     {
+        if (dead)
+            return;
+
         List<IEnemyCombatTarget> targets = roomInfo.Room.EnemyCombatTargets;
 
         if (targets.Count > 0)
@@ -35,5 +57,6 @@ public enum EnemyState
 {
     Idle,
     Attack,
-    Walk
+    Walk,
+    Dead,
 }

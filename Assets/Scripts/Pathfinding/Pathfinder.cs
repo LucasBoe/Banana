@@ -7,8 +7,6 @@ public class Pathfinder : SingletonBehaviour<Pathfinder>
 {
     public List<Vector2> GetPathTo(Vector2 start, Vector2 end, Room room, Collider2D[] toIgnore = null)
     {
-        Debug.Log("Get path for" + toIgnore[0]);
-
         List<Vector2> points = new List<Vector2>();
         List<Collider2D> ignore = new List<Collider2D>(toIgnore);
 

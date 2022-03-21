@@ -8,6 +8,7 @@ TagManager:
   - Portal
   - Helper
   - DamageHelper
+  - DamageEnemy
   layers:
   - Default
   - TransparentFX

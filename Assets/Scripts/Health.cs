@@ -17,11 +17,21 @@ public class Health : MonoBehaviour
         health = maxHealth;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        CheckForDamage(collision.gameObject);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag(damageTag))
+        CheckForDamage(collision.gameObject);
+    }
+
+    private void CheckForDamage(GameObject go)
+    {
+        if (go.CompareTag(damageTag))
         {
-            IDamager damager = collision.gameObject.GetComponent<IDamager>();
+            IDamager damager = go.GetComponent<IDamager>();
 
             if (damager.IsEnabled)
             {

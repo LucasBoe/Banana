@@ -17,6 +17,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     [SerializeField] HelperMoveModule moveModule;
     [SerializeField] TargetModule targetModule;
     [SerializeField] PortalUser portalUser;
+    [SerializeField] CombatModule combatModule;
     [SerializeField] Health health;
 
     private HelperState state;
@@ -27,12 +28,18 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
 
     private void OnEnable()
     {
+        combatModule.Enable();
+        combatModule.HasCombatTarget += EnterCombat;
+        combatModule.HasNoCombatTarget += MoveToNewTarget;
         portalUser.TeleportFinished += MoveToNewTarget;
         health.Die += OnDie;
     }
 
     private void OnDisable()
     {
+        combatModule.Disable();
+        combatModule.HasCombatTarget -= EnterCombat;
+        combatModule.HasNoCombatTarget -= MoveToNewTarget;
         portalUser.TeleportFinished -= MoveToNewTarget;
         health.Die -= OnDie;
     }
@@ -61,11 +68,13 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
             {
                 if (!targetModule.IsFinalTarget)
                     MoveToNewTarget();
-                else
-                    SetState(HelperState.Attack);
             });
             SetState(HelperState.Walk);
         }
+    }
+    private void EnterCombat()
+    {
+        SetState(HelperState.Attack);
     }
     private void OnDie()
     {
@@ -79,7 +88,11 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
         state = newState;
         ChangedState?.Invoke(newState);
     }
-    private void FixedUpdate() => moveModule.Update();
+    private void FixedUpdate()
+    {
+        moveModule.Update();
+        combatModule.Update();
+    }
 
 }
 
@@ -188,6 +201,56 @@ namespace HelperModules
             }
 
             return null;
+        }
+    }
+
+    [System.Serializable]
+    public class CombatModule
+    {
+        List<Enemy> targets = new List<Enemy>();
+        [SerializeField] HelperCombatTrigger trigger;
+        [SerializeField] Transform transform;
+
+        public System.Action HasCombatTarget, HasNoCombatTarget;
+
+        internal void Enable()
+        {
+            trigger.TriggerEnter2D += OnTriggerEnter2D;
+            trigger.TriggerExit2D += OnTriggerExit2D;
+        }
+        internal void Disable()
+        {
+            trigger.TriggerEnter2D -= OnTriggerEnter2D;
+            trigger.TriggerExit2D -= OnTriggerExit2D;
+        }
+        private void OnTriggerEnter2D(Collider2D collider)
+        {
+            Enemy enemy = collider.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                if (targets.Count == 0)
+                    HasCombatTarget?.Invoke();
+                targets.AddUnique(enemy);
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D collider)
+        {
+            Enemy enemy = collider.GetComponent<Enemy>();
+            if (enemy != null && targets.Contains(enemy))
+            {
+                targets.Remove(enemy);
+
+                if (targets.Count == 0)
+                    HasNoCombatTarget?.Invoke();
+            }
+        }
+
+        public void Update()
+        {
+            if (targets.Count == 0) return;
+
+            transform.up = (targets[0].transform.position - transform.position).normalized;
         }
     }
 }

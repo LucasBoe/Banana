@@ -119,7 +119,7 @@ MonoBehaviour:
   deathPrefab: {fileID: 2018651683207688368, guid: 4988b9df9cfccc040b671145bca697e6,
     type: 3}
   particleSystem: {fileID: 652184195549167966}
-  damage: 55
+  damage: 25
 --- !u!50 &652184195549167965
 Rigidbody2D:
   serializedVersion: 4
