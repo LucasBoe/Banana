@@ -29,18 +29,20 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     private void OnEnable()
     {
         combatModule.Enable();
-        combatModule.HasCombatTarget += EnterCombat;
-        combatModule.HasNoCombatTarget += MoveToNewTarget;
+        combatModule.FoundCombatTarget += EnterCombat;
+        combatModule.LostAllCombatTargets += MoveToNewTarget;
         portalUser.TeleportFinished += MoveToNewTarget;
+        moveModule.StopMove += OnTargetReached;
         health.Die += OnDie;
     }
 
     private void OnDisable()
     {
         combatModule.Disable();
-        combatModule.HasCombatTarget -= EnterCombat;
-        combatModule.HasNoCombatTarget -= MoveToNewTarget;
+        combatModule.FoundCombatTarget -= EnterCombat;
+        combatModule.LostAllCombatTargets -= MoveToNewTarget;
         portalUser.TeleportFinished -= MoveToNewTarget;
+        moveModule.StopMove += OnTargetReached;
         health.Die -= OnDie;
     }
     private void Awake()
@@ -57,16 +59,24 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
             MoveToNewTarget();
         }
     }
+    private void OnTargetReached()
+    {
+        if (state != HelperState.Attack && !moveModule.IsMoving)
+            MoveToNewTarget();
+    }
+
     public void MoveToNewTarget()
     {
-        Debug.LogWarning("MoveToNewTarget...");
+        if (combatModule.HasCombatTarget) return;
 
         Transform target = targetModule.GetTarget();
+
+
         if (target != null)
         {
             moveModule.StartMoving(target, () =>
             {
-                if (!targetModule.IsFinalTarget)
+                if (!targetModule.IsFinalTarget && state != HelperState.Attack)
                     MoveToNewTarget();
             });
             SetState(HelperState.Walk);
@@ -74,6 +84,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     }
     private void EnterCombat()
     {
+        moveModule.StopMoving();
         SetState(HelperState.Attack);
     }
     private void OnDie()
@@ -112,6 +123,7 @@ namespace HelperModules
 
         private System.Action targetReachedCallback;
         private List<Vector2> path;
+        public bool IsMoving => path != null && path.Count > 0;
 
         public void StartMoving(Transform target, System.Action targetReachedCallback)
         {
@@ -124,8 +136,8 @@ namespace HelperModules
         {
             path = null;
             rigidbody.velocity = Vector2.zero;
-            StopMove?.Invoke();
             targetReachedCallback?.Invoke();
+            StopMove?.Invoke();
         }
 
         public void Update()
@@ -162,7 +174,6 @@ namespace HelperModules
     [System.Serializable]
     public class TargetModule
     {
-        [SerializeField] Enemy target;
         [SerializeField] RoomInfo roomInfo;
 
         public bool IsFinalTarget => isFinalTarget;
@@ -170,6 +181,7 @@ namespace HelperModules
         private bool isInCage = false;
         private bool isFinalTarget = false;
         public Cage Cage;
+        private Enemy target;
 
         public void SetCage(Cage cage)
         {
@@ -179,28 +191,30 @@ namespace HelperModules
 
         public Transform GetTarget()
         {
-            if (target == null)
-                return null;
-
             if (isInCage)
             {
                 isInCage = false;
                 return Cage.TargetTransform;
             }
 
-            if (roomInfo.Room.IsInside(target.TargetTransform.position))
+            target = EnemyManager.Instance.GetEnemy();
+
+            if (target != null)
             {
-                isFinalTarget = true;
-                return target.TargetTransform;
-            }
-            else
-            {
-                bool roomHasPortal = roomInfo.Room.Portals.Count > 0;
-                if (roomHasPortal)
-                    return roomInfo.Room.Portals[0].TargetTransform;
+                if (roomInfo.Room.IsInside(target.TargetTransform.position))
+                {
+                    isFinalTarget = true;
+                    return target.TargetTransform;
+                }
+                else
+                {
+                    Portal portalToTarget = RoomManager.Instance.GetPortalThatLeadsTo(roomInfo.Room, target.Room);
+                    if (portalToTarget != null)
+                        return portalToTarget.TargetTransform;
+                }
             }
 
-            return null;
+            return roomInfo.Room.GetRandomPoint();
         }
     }
 
@@ -211,7 +225,8 @@ namespace HelperModules
         [SerializeField] HelperCombatTrigger trigger;
         [SerializeField] Transform transform;
 
-        public System.Action HasCombatTarget, HasNoCombatTarget;
+        public System.Action FoundCombatTarget, LostAllCombatTargets;
+        public bool HasCombatTarget => targets.Count > 0;
 
         internal void Enable()
         {
@@ -229,7 +244,7 @@ namespace HelperModules
             if (enemy != null)
             {
                 if (targets.Count == 0)
-                    HasCombatTarget?.Invoke();
+                    FoundCombatTarget?.Invoke();
                 targets.AddUnique(enemy);
             }
         }
@@ -242,7 +257,7 @@ namespace HelperModules
                 targets.Remove(enemy);
 
                 if (targets.Count == 0)
-                    HasNoCombatTarget?.Invoke();
+                    LostAllCombatTargets?.Invoke();
             }
         }
 

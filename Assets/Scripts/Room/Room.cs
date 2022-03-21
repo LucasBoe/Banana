@@ -2,6 +2,7 @@ using NaughtyAttributes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Room : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Room : MonoBehaviour
     public List<Enemy> Enemys = new List<Enemy>();
     public List<Player> Players = new List<Player>();
     public List<IEnemyCombatTarget> EnemyCombatTargets = new List<IEnemyCombatTarget>();
+
+    private Transform[] randomPositions;
 
     private void Awake()
     {
@@ -23,6 +26,37 @@ public class Room : MonoBehaviour
 
         RoomManager.Instance.RegisterRoom(this);
     }
+
+    private void Start()
+    {
+        int randomPointCount = (TileData.Array.Size.x + TileData.Array.Size.y) / 2;
+        List<Transform> randomPoints = new List<Transform>();
+        for (int i = 0; i < randomPointCount; i++)
+            randomPoints.Add(CreateNewRandomPoint());
+
+        randomPositions = randomPoints.ToArray();
+    }
+
+    private Transform CreateNewRandomPoint()
+    {
+        Vector2 point = new Vector2(float.MinValue, float.MaxValue);
+        while (!IsInside(point))
+        {
+            float minX = transform.position.x + TileData.Array.Offset.x;
+            float minY = transform.position.y + TileData.Array.Offset.y;
+            point = new Vector2(minX + Random.Range(0,TileData.Array.Size.x) + 0.5f, minY + Random.Range(0, TileData.Array.Size.y) + 0.5f);
+        }
+
+        GameObject random = new GameObject("randomPoint");
+        random.transform.position = point;
+        return random.transform;
+    }
+
+    public Transform GetRandomPoint()
+    {
+        return randomPositions[Random.Range(0, randomPositions.Length)];
+    }
+
     public void RegisterInfo(RoomInfo info)
     {
         Portals = AddIfMatchesTag(Portals, info, "Portal");

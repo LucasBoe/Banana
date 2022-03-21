@@ -20,8 +20,6 @@ public class HelperAnimator : MonoBehaviour
     }
     private void OnChangedState(HelperState state)
     {
-        Debug.Log("Changed State to " + state);
-
         foreach (var pair in pairs)
         {
             if (pair.State == state)

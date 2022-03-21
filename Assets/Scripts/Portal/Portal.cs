@@ -6,7 +6,7 @@ using UnityEngine;
 public class Portal : MonoBehaviour, IPathTarget
 {
     [SerializeField] public Transform TeleportPosition;
-    [SerializeField] Portal target;
+    [SerializeField] public Portal Target;
     [SerializeField] RoomInfo roomInfo;
 
     public bool Active = true;
@@ -17,7 +17,7 @@ public class Portal : MonoBehaviour, IPathTarget
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!Active || target == null) return;
+        if (!Active || Target == null) return;
 
         PortalUser user = collision.GetComponent<PortalUser>();
 
@@ -28,9 +28,9 @@ public class Portal : MonoBehaviour, IPathTarget
 
     private void Teleport(PortalUser user)
     {
-        target.Active = false;
-        user.Teleport(this, target);
-        target.Teleported?.Invoke();
+        Target.Active = false;
+        user.Teleport(this, Target);
+        Target.Teleported?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -42,9 +42,9 @@ public class Portal : MonoBehaviour, IPathTarget
 
     private void OnDrawGizmosSelected()
     {
-        if (target == null) return;
+        if (Target == null) return;
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position + Vector3.back * 0.5f, target.transform.position + Vector3.back * 0.5f);
+        Gizmos.DrawLine(transform.position + Vector3.back * 0.5f, Target.transform.position + Vector3.back * 0.5f);
     }
 }

@@ -10,10 +10,12 @@ public class Enemy : MonoBehaviour, IPathTarget
     [SerializeField] Health health;
     [SerializeField] Collider2D collider2D;
     public Transform TargetTransform => transform;
+    public Room Room => roomInfo.Room;
 
     public System.Action<EnemyState, IEnemyCombatTarget> SetEnemyState;
 
     private bool dead = false;
+    private bool active = false;
 
     private void OnEnable()
     {
@@ -27,6 +29,7 @@ public class Enemy : MonoBehaviour, IPathTarget
     private void OnDie()
     {
         SetEnemyState?.Invoke(EnemyState.Dead, null);
+        EnemyManager.Instance.UnregisterActive(this);
         collider2D.enabled = false;
         Destroy(this);
     }
@@ -40,6 +43,12 @@ public class Enemy : MonoBehaviour, IPathTarget
 
         if (targets.Count > 0)
         {
+            if (!active)
+            {
+                active = true;
+                EnemyManager.Instance.RegisterActive(this);
+            }
+
             IEnumerable<IEnemyCombatTarget> alive = targets.Where(t => !t.IsNull);
 
             if (alive.Count() > 0)
