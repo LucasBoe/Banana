@@ -111,6 +111,36 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &2205719182349596417
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5686211864367398518}
+  m_Layer: 0
+  m_Name: LeaveCageTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5686211864367398518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2205719182349596417}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8316563523370904820}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4933860450046352663
 GameObject:
   m_ObjectHideFlags: 0
@@ -354,6 +384,7 @@ Transform:
   - {fileID: 9172127815172031388}
   - {fileID: 8421985339678839144}
   - {fileID: 6222096423759242122}
+  - {fileID: 5686211864367398518}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -386,6 +417,7 @@ MonoBehaviour:
   contains: {fileID: 5187667717226992272}
   toDisable: {fileID: 5925225789238987163}
   toEnable: {fileID: 1151324883771500296}
+  leaveTransform: {fileID: 5686211864367398518}
 --- !u!61 &5925225789238987163
 BoxCollider2D:
   m_ObjectHideFlags: 0
