@@ -21,10 +21,12 @@ public class Player : MonoBehaviour, IEnemyCombatTarget
         Vector2 moveVector = moveModule.GetMoveVectorFromInput(input);
 
         Vector2 targetPosition = roomModule.GetClosestPointInRoom(position, moveVector);
-        moveModule.MoveTo(targetPosition);
 
         if (targetPosition != position)
-            animationModule.Animate(input, Time.fixedDeltaTime);
+            moveModule.MoveTo(targetPosition);
+
+        animationModule.Animate(input);
+
     }
 }
 
@@ -39,7 +41,7 @@ namespace PlayerModules
         [SerializeField] Vector2 input;
         public Vector2 GetInput()
         {
-            input = (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up).normalized;
+            input = (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up);
             return input;
         }
     }
@@ -58,6 +60,9 @@ namespace PlayerModules
 
         internal void MoveTo(Vector2 moveTarget)
         {
+            float targetAngle = Vector2.SignedAngle(Vector2.up, (moveTarget - rigidbody2D.position).normalized);
+            float currentAngle = rigidbody2D.rotation;
+            rigidbody2D.MoveRotation(Mathf.MoveTowardsAngle(currentAngle, targetAngle, Time.fixedDeltaTime * 360f));
             rigidbody2D.MovePosition(moveTarget);
         }
     }
@@ -81,29 +86,10 @@ namespace PlayerModules
     [System.Serializable]
     public class PlayerAnimationModule : PlayerModule
     {
-        [SerializeField] SpriteRenderer spriteRenderer;
-        [SerializeField] PlayerAnimationStrip down, left, right, up;
-        float time = 0;
-
-        internal void Animate(Vector2 input, float fixedDeltaTime)
+        [SerializeField] Animator animator;
+        internal void Animate(Vector2 input)
         {
-            time += fixedDeltaTime;
-            PlayerAnimationStrip strip = GetStripFromInput(input);
-            spriteRenderer.sprite = strip.Sprites[Mathf.RoundToInt((time * 12f) % (strip.Sprites.Length - 1))];
-        }
-
-        private PlayerAnimationStrip GetStripFromInput(Vector2 input)
-        {
-            if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                return input.x < 0 ? left : right;
-            else
-                return input.y < 0 ? down : up;
-        }
-
-        [System.Serializable]
-        public class PlayerAnimationStrip
-        {
-            public Sprite[] Sprites;
+            animator.SetFloat("speed", input.magnitude);
         }
     }
 }
