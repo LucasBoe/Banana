@@ -8,7 +8,9 @@ public class Portal : MonoBehaviour, IPathTarget
     [SerializeField] public Transform TeleportPosition;
     [SerializeField] public Portal Target;
     [SerializeField] RoomInfo roomInfo;
+    [SerializeField] PortalBlocker blocker;
 
+    public bool IsBlocked => blocker != null && blocker.isActiveAndEnabled;
     public bool Active = true;
     public System.Action Teleported;
     public Room Room => roomInfo.Room;
