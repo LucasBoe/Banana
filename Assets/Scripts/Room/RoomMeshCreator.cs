@@ -56,7 +56,7 @@ public class RoomMeshCreator : MonoBehaviour
             }).ToList();
 
             meshData.Tris = ConnectQuad(meshData, zero);
-            meshData.Normals = CreateNormals(meshData, Vector3.up);
+            meshData.Normals = CreateNormals(meshData, Vector3.back);
             meshData.UV = GetUvs(meshData, new int[] { 12, 13, 8, 9 }, 4);
         }
         else
@@ -153,7 +153,7 @@ public class RoomMeshCreator : MonoBehaviour
         int z = meshData.Verts.Count;
         meshData.Verts = meshData.Verts.Concat(new Vector3[4] { a, b, c, d, }).ToList();
         meshData.Tris = ConnectQuad(meshData, z);
-        meshData.Normals = CreateNormals(meshData, Vector3.forward);
+        meshData.Normals = CreateNormals(meshData, -backOffset);
         meshData.UV = GetUvs(meshData, wallIndexies, 4);
 
         var o = backOffset * 0.1f;
@@ -161,7 +161,7 @@ public class RoomMeshCreator : MonoBehaviour
         int zInner = meshData.Verts.Count;
         meshData.Verts = meshData.Verts.Concat(new Vector3[4] { b + o, a + o, d + o, c + o }).ToList();
         meshData.Tris = ConnectQuad(meshData, zInner);
-        meshData.Normals = CreateNormals(meshData, Vector3.back);
+        meshData.Normals = CreateNormals(meshData, backOffset);
         meshData.UV = GetUvs(meshData, backIndexies, 4);
     }
 
@@ -176,7 +176,7 @@ public class RoomMeshCreator : MonoBehaviour
                 }).ToList();
 
         meshData.Tris = ConnectQuad(meshData, zTop);
-        meshData.Normals = CreateNormals(meshData, Vector3.up);
+        meshData.Normals = CreateNormals(meshData, Vector3.back);
         meshData.UV = GetUvs(meshData, new int[] { textureIndex }, 4);
         return pos;
     }
@@ -201,10 +201,10 @@ public class RoomMeshCreator : MonoBehaviour
     private List<Vector3> CreateNormals(MeshData meshData, Vector3 up)
     {
         return meshData.Normals.Concat(new Vector3[4] {
-                Vector3.up,
-                Vector3.up,
-                Vector3.up,
-                Vector3.up
+                up,
+                up,
+                up,
+                up
             }).ToList();
     }
 
