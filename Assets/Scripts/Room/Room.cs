@@ -94,7 +94,7 @@ public class Room : MonoBehaviour
 
     public bool IsInside(Vector2 pos)
     {
-        return TileData.GetAirAt(RemoveOffset(pos));
+        return TileData.Get(RemoveOffset(pos)) != TileType.SOLID;
     }
 
     private List<T> AddIfMatchesTag<T>(List<T> list, RoomInfo info, string tag)

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 [ExecuteInEditMode]
 public class RoomMeshCreator : MonoBehaviour
@@ -27,7 +28,7 @@ public class RoomMeshCreator : MonoBehaviour
                     corner = data.IsAir(x + 1, y + 1) || data.IsAir(x - 1, y + 1) || data.IsAir(x - 1, y - 1) || data.IsAir(x + 1, y - 1)
                 };
                 Vector2Int pos = new Vector2Int(x + data.Array.Offset.x, y + data.Array.Offset.y);
-                DrawTile(pos, data.IsAir(x, y), result, meshData);
+                DrawTile(pos, data.Get(x, y), result, meshData);
             }
         }
 
@@ -42,9 +43,9 @@ public class RoomMeshCreator : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
-    private void DrawTile(Vector2Int pos, bool air, NeightbourResult result, MeshData meshData)
+    private void DrawTile(Vector2Int pos, TileType type, NeightbourResult result, MeshData meshData)
     {
-        if (air)
+        if (type == TileType.AIR)
         {
             int zero = meshData.Verts.Count;
             meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
@@ -57,176 +58,55 @@ public class RoomMeshCreator : MonoBehaviour
             meshData.Tris = ConnectQuad(meshData, zero);
             meshData.Normals = CreateNormals(meshData, Vector3.up);
             meshData.UV = GetUvs(meshData, new int[] { 12, 13, 8, 9 }, 4);
-
-
-            if (result.Top)
-            {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x + 1, pos.y),
-                    new Vector3(pos.x, pos.y),
-                    new Vector3(pos.x + 1, pos.y, -1),
-                    new Vector3(pos.x, pos.y, -1 ),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.forward);
-                meshData.UV = GetUvs(meshData, new int[] { 14, 15, 10, 11 }, 4);
-
-                int zInner = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, pos.y),
-                    new Vector3(pos.x + 1, pos.y),
-                    new Vector3(pos.x, pos.y, -1 ),
-                    new Vector3(pos.x + 1, pos.y, -1),
-                }).ToList();
-                
-                meshData.Tris = ConnectQuad(meshData, zInner);
-                meshData.Normals = CreateNormals(meshData, Vector3.back);
-                meshData.UV = GetUvs(meshData, new int[] { 3 }, 4);
-            }
-
-            if (result.Bottom)
-            {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, pos.y + 1),
-                    new Vector3(pos.x + 1, pos.y + 1),
-                    new Vector3(pos.x, pos.y + 1, -1 ),
-                    new Vector3(pos.x + 1, pos.y + 1, -1),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.back);
-                meshData.UV = GetUvs(meshData, new int[] { 14, 15, 10, 11 }, 4);
-
-                int zInner = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x + 1, pos.y + 1),
-                    new Vector3(pos.x, pos.y + 1),
-                    new Vector3(pos.x + 1, pos.y + 1, -1),
-                    new Vector3(pos.x, pos.y + 1, -1 ),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, zInner);
-                meshData.Normals = CreateNormals(meshData, Vector3.forward);
-                meshData.UV = GetUvs(meshData, new int[] { 3 }, 4);
-            }
-
-            if (result.Right)
-            {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x + 1, pos.y + 1),
-                    new Vector3(pos.x + 1,  pos.y),
-                    new Vector3(pos.x + 1, pos.y + 1, -1),
-                    new Vector3(pos.x + 1, pos.y, -1 ),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.left);
-                meshData.UV = GetUvs(meshData, new int[] { 14, 15, 10, 11 }, 4);
-
-                int zInner = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x + 1,  pos.y),
-                    new Vector3(pos.x + 1, pos.y + 1),
-                    new Vector3(pos.x + 1, pos.y, -1 ),
-                    new Vector3(pos.x + 1, pos.y + 1, -1),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, zInner);
-                meshData.Normals = CreateNormals(meshData, Vector3.right);
-                meshData.UV = GetUvs(meshData, new int[] { 3 }, 4);
-            }
-
-            if (result.Left)
-            {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, pos.y + 1, -1),
-                    new Vector3(pos.x, pos.y , -1),
-                    new Vector3(pos.x, pos.y + 1),
-                    new Vector3(pos.x, pos.y),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.right);
-                meshData.UV = GetUvs(meshData, new int[] { 14, 15, 10, 11 }, 4);
-
-                int zInner = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x, pos.y , -1),
-                    new Vector3(pos.x, pos.y + 1, -1),
-                    new Vector3(pos.x, pos.y),
-                    new Vector3(pos.x, pos.y + 1),
-                }).ToList();
-
-                meshData.Tris = ConnectQuad(meshData, zInner);
-                meshData.Normals = CreateNormals(meshData, Vector3.left);
-                meshData.UV = GetUvs(meshData, new int[] { 3 }, 4);
-            }
         }
         else
         {
             if (!result.Top)
             {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x,  pos.y, -1 ),
-                    new Vector3(pos.x + 1,  pos.y, -1),
-                    new Vector3(pos.x,  pos.y + 1, -1),
-                    new Vector3(pos.x +1,  pos.y + 1, -1)
-                }).ToList();
+                Vector3 a = new Vector3(pos.x, pos.y);
+                Vector3 b = new Vector3(pos.x + 1, pos.y);
+                Vector3 c = new Vector3(pos.x, pos.y, -1);
+                Vector3 d = new Vector3(pos.x + 1, pos.y, -1);
 
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.up);
-                meshData.UV = GetUvs(meshData, new int[] { 4 }, 4);
+                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+
+                pos = CreateTopPlaneWithTexture(pos, meshData, 4);
             }
 
             if (!result.Bottom)
             {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x,  pos.y, -1 ),
-                    new Vector3(pos.x + 1,  pos.y, -1),
-                    new Vector3(pos.x,  pos.y + 1, -1),
-                    new Vector3(pos.x +1,  pos.y + 1, -1)
-                }).ToList();
+                Vector3 a = new Vector3(pos.x + 1, pos.y + 1);
+                Vector3 b = new Vector3(pos.x, pos.y + 1);
+                Vector3 c = new Vector3(pos.x + 1, pos.y + 1, -1);
+                Vector3 d = new Vector3(pos.x, pos.y + 1, -1);
 
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.up);
-                meshData.UV = GetUvs(meshData, new int[] { 0 }, 4);
+                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+
+                pos = CreateTopPlaneWithTexture(pos, meshData, 0);
             }
 
             if (!result.Right)
             {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x,  pos.y, -1 ),
-                    new Vector3(pos.x + 1,  pos.y, -1),
-                    new Vector3(pos.x,  pos.y + 1, -1),
-                    new Vector3(pos.x +1,  pos.y + 1, -1)
-                }).ToList();
+                Vector3 a = new Vector3(pos.x + 1, pos.y);
+                Vector3 b = new Vector3(pos.x + 1, pos.y + 1);
+                Vector3 c = new Vector3(pos.x + 1, pos.y, -1);
+                Vector3 d = new Vector3(pos.x + 1, pos.y + 1, -1);
 
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.up);
-                meshData.UV = GetUvs(meshData, new int[] { 1 }, 4);
+                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+
+                pos = CreateTopPlaneWithTexture(pos, meshData, 1);
             }
 
             if (!result.Left)
             {
-                int z = meshData.Verts.Count;
-                meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
-                    new Vector3(pos.x,  pos.y, -1 ),
-                    new Vector3(pos.x + 1,  pos.y, -1),
-                    new Vector3(pos.x,  pos.y + 1, -1),
-                    new Vector3(pos.x +1,  pos.y + 1, -1)
-                }).ToList();
+                Vector3 a = new Vector3(pos.x, pos.y + 1);
+                Vector3 b = new Vector3(pos.x, pos.y);
+                Vector3 c = new Vector3(pos.x, pos.y + 1, -1);
+                Vector3 d = new Vector3(pos.x, pos.y, -1);
 
-                meshData.Tris = ConnectQuad(meshData, z);
-                meshData.Normals = CreateNormals(meshData, Vector3.up);
-                meshData.UV = GetUvs(meshData, new int[] { 5 }, 4);
+                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+
+                pos = CreateTopPlaneWithTexture(pos, meshData, 5);
             }
 
             if (result.Corner)
@@ -245,6 +125,60 @@ public class RoomMeshCreator : MonoBehaviour
             }
         }
     }
+
+    private int[] GetSideBackTextureForType(TileType type)
+    {
+        switch (type)
+        {
+            case TileType.PORTAL:
+                return new int[] { 6 };
+        }
+
+        return  new int[] { 3 };
+    }
+
+    private int[] GetSideFrontTextureForType(TileType type)
+    {
+        switch (type)
+        {
+            case TileType.PORTAL:
+                return new int[] { 7 };
+        }
+
+        return new int[] { 14, 15, 10, 11 };
+    }
+
+    private void CreateWallMesh(MeshData meshData, Vector3 a, Vector3 b, Vector3 c, Vector3 d, int[] wallIndexies, int[] backIndexies)
+    {
+        int z = meshData.Verts.Count;
+        meshData.Verts = meshData.Verts.Concat(new Vector3[4] { a, b, c, d, }).ToList();
+        meshData.Tris = ConnectQuad(meshData, z);
+        meshData.Normals = CreateNormals(meshData, Vector3.forward);
+        meshData.UV = GetUvs(meshData, wallIndexies, 4);
+
+        int zInner = meshData.Verts.Count;
+        meshData.Verts = meshData.Verts.Concat(new Vector3[4] { b, a, d, c, }).ToList();
+        meshData.Tris = ConnectQuad(meshData, zInner);
+        meshData.Normals = CreateNormals(meshData, Vector3.back);
+        meshData.UV = GetUvs(meshData, backIndexies, 4);
+    }
+
+    private Vector2Int CreateTopPlaneWithTexture(Vector2Int pos, MeshData meshData, int textureIndex)
+    {
+        int zTop = meshData.Verts.Count;
+        meshData.Verts = meshData.Verts.Concat(new Vector3[4] {
+                    new Vector3(pos.x,  pos.y, -1 ),
+                    new Vector3(pos.x + 1,  pos.y, -1),
+                    new Vector3(pos.x,  pos.y + 1, -1),
+                    new Vector3(pos.x +1,  pos.y + 1, -1)
+                }).ToList();
+
+        meshData.Tris = ConnectQuad(meshData, zTop);
+        meshData.Normals = CreateNormals(meshData, Vector3.up);
+        meshData.UV = GetUvs(meshData, new int[] { textureIndex }, 4);
+        return pos;
+    }
+
     private List<Vector2> GetUvs(MeshData meshData, int[] vs, int tileCount)
     {
         int random = Util.GetRandom(vs);
@@ -293,7 +227,7 @@ public class NeightbourResult
 {
     public bool corner;
     public bool Right, Left, Top, Bottom;
-    public bool Corner => corner && Top && Bottom && Left && Right; 
+    public bool Corner => corner && Top && Bottom && Left && Right;
     public override string ToString()
     {
         return $"r:{Right}, l:{Left}, t:{Top}, b:{Bottom}";

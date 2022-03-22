@@ -20,6 +20,14 @@ public class TileData
         if (!IsInsidePerimeter(x, y))
             return false;
 
+        return Array.Get(x, y) == TileType.AIR;
+    }
+    internal TileType Get(Vector2Int vector) => Get(vector.x, vector.y);
+    internal TileType Get(int x, int y)
+    {
+        if (!IsInsidePerimeter(x, y))
+            return TileType.SOLID;
+
         return Array.Get(x, y);
     }
 
@@ -42,11 +50,23 @@ public class TileData
     {
         if (IsInsidePerimeterBorder(local.x, local.y))
         {
-            Array.Set(local.x, local.y, true);
+            Array.Set(local.x, local.y, TileType.AIR);
         }
         else
         {
-            ResizeToFit(local);
+            ResizeToFit(local, TileType.AIR);
+        }
+    }
+
+    public void SetTilAt(Vector2Int local, TileType type)
+    {
+        if (IsInsidePerimeterBorder(local.x, local.y))
+        {
+            Array.Set(local.x, local.y, type);
+        }
+        else
+        {
+            ResizeToFit(local, type);
         }
     }
 
@@ -85,14 +105,14 @@ public class TileData
         {
             for (int dynamicAxisValue = 1; dynamicAxisValue < dynamicAxisMax; dynamicAxisValue++)
             {
-                if (Array.Get(dynamicAxisValue, staticAxisValue)) return false;
+                if (Array.Get(dynamicAxisValue, staticAxisValue) != TileType.SOLID) return false;
             }
         }
         else if (checkY)
         {
             for (int dynamicAxisValue = 1; dynamicAxisValue < dynamicAxisMax; dynamicAxisValue++)
             {
-                if (Array.Get(staticAxisValue, dynamicAxisValue)) return false;
+                if (Array.Get(staticAxisValue, dynamicAxisValue) != TileType.SOLID) return false;
             }
         }
 
@@ -102,14 +122,14 @@ public class TileData
     public void RemoveTileAt(Vector2Int local)
     {
         if (IsInsidePerimeter(local.x, local.y))
-            Array.Set(local.x, local.y, false);
+            Array.Set(local.x, local.y, TileType.SOLID);
     }
     public bool IsBorderTile(Vector2Int local)
     {
         return !IsInsidePerimeterBorder(local.x, local.y);
     }
 
-    private void ResizeToFit(Vector2Int local)
+    private void ResizeToFit(Vector2Int local, TileType type)
     {
         Vector2Int newTile = AddOffset(local);
 
@@ -129,7 +149,7 @@ public class TileData
         Vector2Int newSize = newMax - newMin;
 
         TileArray newMap = CreateNewMapWithSize(oldMin, newMin, newSize);
-        newMap.Set(newX - newMinX, newY - newMinY, true);
+        newMap.Set(newX - newMinX, newY - newMinY, type);
 
         Array = newMap;
     }
@@ -143,8 +163,8 @@ public class TileData
             {
                 Vector2Int toGlobal = new Vector2Int(x + newMin.x, y + newMin.y);
                 Vector2Int toOld = toGlobal - oldMin;
-                bool isOldTile = Array.Get(toOld.x, toOld.y);
-                newMap.Set(x, y, isOldTile);
+                TileType oldTile = Array.Get(toOld.x, toOld.y);
+                newMap.Set(x, y, oldTile);
             }
         }
 
@@ -166,26 +186,33 @@ public class TileArray
 {
     public Vector2Int Size;
     public Vector2Int Offset;
-    public bool[] Elements;
+    public TileType[] Elements;
 
     public TileArray(Vector2Int newSize, Vector2Int newOffset)
     {
         Size = newSize;
         Offset = newOffset;
-        Elements = new bool[newSize.x * newSize.y];
+        Elements = new TileType[newSize.x * newSize.y];
     }
 
-    public bool Get(int x, int y)
+    public TileType Get(int x, int y)
     {
         bool outside = x < 0 || y < 0 || x >= Size.x || y >= Size.y;
 
         if (outside)
-            return false;
+            return TileType.SOLID;
 
         return Elements[y * Size.x + x];
     }
-    public void Set(int x, int y, bool value)
+    public void Set(int x, int y, TileType value)
     {
         Elements[y * Size.x + x] = value;
     }
+}
+
+public enum TileType
+{
+    AIR,
+    SOLID,
+    PORTAL
 }
