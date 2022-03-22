@@ -68,7 +68,7 @@ public class RoomMeshCreator : MonoBehaviour
                 Vector3 c = new Vector3(pos.x, pos.y, -1);
                 Vector3 d = new Vector3(pos.x + 1, pos.y, -1);
 
-                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+                CreateWallMesh(meshData, a, b, c, d, Vector3.up, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
 
                 pos = CreateTopPlaneWithTexture(pos, meshData, 4);
             }
@@ -80,7 +80,7 @@ public class RoomMeshCreator : MonoBehaviour
                 Vector3 c = new Vector3(pos.x + 1, pos.y + 1, -1);
                 Vector3 d = new Vector3(pos.x, pos.y + 1, -1);
 
-                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+                CreateWallMesh(meshData, a, b, c, d, Vector3.down, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
 
                 pos = CreateTopPlaneWithTexture(pos, meshData, 0);
             }
@@ -92,7 +92,7 @@ public class RoomMeshCreator : MonoBehaviour
                 Vector3 c = new Vector3(pos.x + 1, pos.y, -1);
                 Vector3 d = new Vector3(pos.x + 1, pos.y + 1, -1);
 
-                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+                CreateWallMesh(meshData, a, b, c, d, Vector3.left, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
 
                 pos = CreateTopPlaneWithTexture(pos, meshData, 1);
             }
@@ -104,7 +104,7 @@ public class RoomMeshCreator : MonoBehaviour
                 Vector3 c = new Vector3(pos.x, pos.y + 1, -1);
                 Vector3 d = new Vector3(pos.x, pos.y, -1);
 
-                CreateWallMesh(meshData, a, b, c, d, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
+                CreateWallMesh(meshData, a, b, c, d, Vector3.right, GetSideFrontTextureForType(type), GetSideBackTextureForType(type));
 
                 pos = CreateTopPlaneWithTexture(pos, meshData, 5);
             }
@@ -134,7 +134,7 @@ public class RoomMeshCreator : MonoBehaviour
                 return new int[] { 6 };
         }
 
-        return  new int[] { 3 };
+        return new int[] { 3 };
     }
 
     private int[] GetSideFrontTextureForType(TileType type)
@@ -148,7 +148,7 @@ public class RoomMeshCreator : MonoBehaviour
         return new int[] { 14, 15, 10, 11 };
     }
 
-    private void CreateWallMesh(MeshData meshData, Vector3 a, Vector3 b, Vector3 c, Vector3 d, int[] wallIndexies, int[] backIndexies)
+    private void CreateWallMesh(MeshData meshData, Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 backOffset, int[] wallIndexies, int[] backIndexies)
     {
         int z = meshData.Verts.Count;
         meshData.Verts = meshData.Verts.Concat(new Vector3[4] { a, b, c, d, }).ToList();
@@ -156,8 +156,10 @@ public class RoomMeshCreator : MonoBehaviour
         meshData.Normals = CreateNormals(meshData, Vector3.forward);
         meshData.UV = GetUvs(meshData, wallIndexies, 4);
 
+        var o = backOffset * 0.1f;
+
         int zInner = meshData.Verts.Count;
-        meshData.Verts = meshData.Verts.Concat(new Vector3[4] { b, a, d, c, }).ToList();
+        meshData.Verts = meshData.Verts.Concat(new Vector3[4] { b + o, a + o, d + o, c + o }).ToList();
         meshData.Tris = ConnectQuad(meshData, zInner);
         meshData.Normals = CreateNormals(meshData, Vector3.back);
         meshData.UV = GetUvs(meshData, backIndexies, 4);
