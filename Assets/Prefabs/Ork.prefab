@@ -167,7 +167,6 @@ MonoBehaviour:
     speed: 1
     ownColliderToIgnoreForPathfinding: {fileID: 5818097344625774855}
   targetModule:
-    target: {fileID: 0}
     roomInfo: {fileID: 8669413604284495519}
     Cage: {fileID: 0}
   portalUser: {fileID: 6944276837928527045}
@@ -1205,12 +1204,71 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7443072189431460425}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1188234022557128923 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8590174512768330386, guid: 53cc2216b82a778428f76f899490936a,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443072189431460425}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &7826328830811020701 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 853342122966069204, guid: 53cc2216b82a778428f76f899490936a,
+    type: 3}
+  m_PrefabInstance: {fileID: 7443072189431460425}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9150952097528499585 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: 53cc2216b82a778428f76f899490936a,
     type: 3}
   m_PrefabInstance: {fileID: 7443072189431460425}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4036074417979871298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188234022557128923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef7287feba14f047b1498e21915ea78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 2812867378942826014}
+  meshRenderer: {fileID: 7826328830811020701}
+  takeDamageCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 5.094953
+      outSlope: 5.094953
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.07547468
+    - serializedVersion: 3
+      time: 0.25
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.49426422
+    - serializedVersion: 3
+      time: 0.75
+      value: 0
+      inSlope: -2
+      outSlope: -2
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!95 &7443072189918583153
 Animator:
   serializedVersion: 3

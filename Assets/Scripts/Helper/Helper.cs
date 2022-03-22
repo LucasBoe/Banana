@@ -67,10 +67,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
 
     public void MoveToNewTarget()
     {
-        if (combatModule.HasCombatTarget) return;
-
         Transform target = targetModule.GetTarget();
-
 
         if (target != null)
         {
@@ -101,7 +98,8 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     }
     private void FixedUpdate()
     {
-        moveModule.Update();
+        if (!combatModule.HasCombatTarget)
+            moveModule.Update();
         combatModule.Update();
     }
 
@@ -117,6 +115,8 @@ namespace HelperModules
         [SerializeField] Rigidbody2D rigidbody;
         [SerializeField] float speed;
         [SerializeField] Collider2D ownColliderToIgnoreForPathfinding;
+
+        [SerializeField] bool isMoving;
 
         public System.Action StartMove;
         public System.Action StopMove;
@@ -142,12 +142,14 @@ namespace HelperModules
 
         public void Update()
         {
+            isMoving = false;
             if (path != null)
             {
                 if (path.Count == 0)
                     StopMoving();
                 else
                 {
+                    isMoving = true;
                     Vector2 dir = path[0] - (Vector2)transform.position;
                     Vector2 vel = (dir).normalized * speed;
                     rigidbody.velocity = vel;
