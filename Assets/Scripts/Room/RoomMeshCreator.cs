@@ -9,6 +9,7 @@ public class RoomMeshCreator : MonoBehaviour
 {
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] Material material;
+
     public void UpdateMesh(TileData data)
     {
         meshRenderer.sharedMaterial = material;

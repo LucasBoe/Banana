@@ -6,6 +6,7 @@ using UnityEngine;
 public class PortalUser : MonoBehaviour
 {
     public System.Action<Room, Room> ChangeRoom;
+    public System.Action<Transform, Vector3> TeleportingPlayer;
     public System.Action TeleportFinished;
 
     [SerializeField] MaterialInstantiator MaterialInstantiator;
@@ -16,7 +17,12 @@ public class PortalUser : MonoBehaviour
 
     public void Teleport(Portal from, Portal to)
     {
+        Vector2 target = from.TransformPointToTarget(transform.position);
+        Vector2 before = transform.position;
+
         transform.position = from.TransformPointToTarget(transform.position);
+        TeleportingPlayer?.Invoke(transform, target - before);
+
         ChangeRoom?.Invoke(from.Room, to.Room);
     }
 

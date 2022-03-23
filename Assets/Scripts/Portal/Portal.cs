@@ -12,7 +12,6 @@ public class Portal : MonoBehaviour, IPathTarget
     [SerializeField] Transform referencePosition;
 
     public bool IsBlocked => blocker != null && blocker.isActiveAndEnabled;
-    public bool Active = true;
     public System.Action Teleported;
     public Room Room => roomInfo.Room;
 
@@ -22,11 +21,16 @@ public class Portal : MonoBehaviour, IPathTarget
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!Active || Target == null) return;
-
         PortalUser user = collision.GetComponent<PortalUser>();
 
         if (user == null || user.IsTeleporting) return;
+
+        if (Target == null)
+            Target = RoomManager.Instance.GetNewRoomsPortal(this);
+
+        if (Target == null) return;
+
+
 
         PortalTeleportation teleportation = user.StartTeleportation(this, Target);
         teleportations.Add(user, teleportation);
@@ -43,8 +47,6 @@ public class Portal : MonoBehaviour, IPathTarget
         {
             teleportations[user].TryAbort();
         }
-
-        Active = true;
     }
 
     private void OnDrawGizmosSelected()

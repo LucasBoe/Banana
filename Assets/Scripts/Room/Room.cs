@@ -77,7 +77,9 @@ public class Room : MonoBehaviour
 
     public Vector2Int RemoveOffset(Vector3 point)
     {
-        Vector2Int newPoint = new Vector2Int(Mathf.FloorToInt(point.x - transform.position.x), Mathf.FloorToInt((point.y) - transform.position.y));
+        //Vector2Int newPoint = new Vector2Int(Mathf.FloorToInt(point.x - transform.position.x), Mathf.FloorToInt((point.y) - transform.position.y));
+        Vector2 toLocal = transform.InverseTransformPoint(point);
+        Vector2Int newPoint = new Vector2Int(Mathf.FloorToInt(toLocal.x), Mathf.FloorToInt(toLocal.y));
         return TileData.RemoveOffset(newPoint);
     }
     internal Vector2 AdaptVector2ToRoomPerimeter(Vector2 origin, Vector2 target)
