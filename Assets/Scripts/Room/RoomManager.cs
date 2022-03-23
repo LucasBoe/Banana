@@ -75,4 +75,5 @@ public class RoomManager : SingletonBehaviour<RoomManager>
         outPortal.Target = inPortal;
         return outPortal;
     }
+    public Room[] Rooms => rooms.ToArray();
 }
