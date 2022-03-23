@@ -9,6 +9,7 @@ public class Portal : MonoBehaviour, IPathTarget
     [SerializeField] public Portal Target;
     [SerializeField] RoomInfo roomInfo;
     [SerializeField] PortalBlocker blocker;
+    [SerializeField] Transform referencePosition;
 
     public bool IsBlocked => blocker != null && blocker.isActiveAndEnabled;
     public bool Active = true;
@@ -17,19 +18,25 @@ public class Portal : MonoBehaviour, IPathTarget
 
     public Transform TargetTransform => TeleportPosition;
 
+    private Dictionary<PortalUser, PortalTeleportation> teleportations = new Dictionary<PortalUser, PortalTeleportation>();
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!Active || Target == null) return;
 
         PortalUser user = collision.GetComponent<PortalUser>();
 
-        if (user == null) return;
+        if (user == null || user.IsTeleporting) return;
 
-        Teleport(user);
+        PortalTeleportation teleportation = user.StartTeleportation(this, Target);
+        teleportations.Add(user,teleportation);
+        teleportation.OnExit += () => teleportations.Remove(user);
+        //Teleport(user);
     }
 
     private void Teleport(PortalUser user)
     {
+
         Target.Active = false;
         user.Teleport(this, Target);
         Target.Teleported?.Invoke();
@@ -37,7 +44,14 @@ public class Portal : MonoBehaviour, IPathTarget
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.GetComponent<PortalUser>() == null) return;
+        PortalUser user = collision.GetComponent<PortalUser>();
+
+        if (user == null) return;
+
+        if (teleportations.ContainsKey(user))
+        {
+            teleportations[user].TryAbort();
+        }
 
         Active = true;
     }
@@ -49,4 +63,20 @@ public class Portal : MonoBehaviour, IPathTarget
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(transform.position + Vector3.back * 0.5f, Target.transform.position + Vector3.back * 0.5f);
     }
+
+    private void OnDrawGizmos()
+    {
+        if (referencePosition == null) return;
+
+        Gizmos.DrawWireSphere(
+        TransformPointToTarget(referencePosition.position), 0.1f);
+    }
+
+    public Vector2 TransformPointToTarget (Vector2 worldPoint)
+    {
+        Vector2 ownLocal = transform.InverseTransformPoint(worldPoint);
+        Vector2 otherWorld = Target.transform.TransformPoint(-ownLocal);
+        return otherWorld;
+    } 
+
 }
