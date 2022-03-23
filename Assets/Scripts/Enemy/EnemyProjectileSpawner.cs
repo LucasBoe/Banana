@@ -31,13 +31,14 @@ public class EnemyProjectileSpawner : MonoBehaviour
     {
         if (target != null && !target.IsNull)
         {
-            Vector2 dir = (target.Position - (Vector2)origin.position).normalized;
+            Vector2 dir = (target.Position - (Vector2)transform.position).normalized;
             transform.up = dir;
         }
     }
 
     public void Spawn()
     {
-        Instantiate(prefab, (Vector2)origin.position, Quaternion.identity).Shoot(roomInfo.Room, transform.up);
+        Vector2 dir = (target.Position - (Vector2)origin.position).normalized;
+        Instantiate(prefab, (Vector2)origin.position, Quaternion.identity).Shoot(roomInfo.Room, dir);
     }
 }

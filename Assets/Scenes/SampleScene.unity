@@ -3158,11 +3158,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 5.5493684
       objectReference: {fileID: 0}
-    - target: {fileID: 8316563523295193711, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.33
-      objectReference: {fileID: 0}
     - target: {fileID: 8316563523370904820, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
         type: 3}
       propertyPath: m_RootOrder
@@ -4034,11 +4029,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 5.5493684
-      objectReference: {fileID: 0}
-    - target: {fileID: 8316563523295193711, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 8316563523370904820, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
         type: 3}
@@ -6957,11 +6947,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 5.5493684
       objectReference: {fileID: 0}
-    - target: {fileID: 8316563523295193711, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.33
-      objectReference: {fileID: 0}
     - target: {fileID: 8316563523370904820, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
         type: 3}
       propertyPath: m_RootOrder
@@ -7016,6 +7001,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 89
+      objectReference: {fileID: 0}
+    - target: {fileID: 8421985339678839144, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000004284084
+      objectReference: {fileID: 0}
+    - target: {fileID: 8421985339678839144, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.0606602
       objectReference: {fileID: 0}
     - target: {fileID: 8656357028837340750, guid: 5ca4ef02f1f6c604885c9a636c1bfb89,
         type: 3}
