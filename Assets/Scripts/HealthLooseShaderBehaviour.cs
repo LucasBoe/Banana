@@ -6,15 +6,8 @@ using UnityEngine;
 public class HealthLooseShaderBehaviour : MonoBehaviour
 {
     [SerializeField] Health health;
-    [SerializeField] SkinnedMeshRenderer meshRenderer;
+    [SerializeField] MaterialInstantiator materialInstiator;
     [SerializeField] AnimationCurve takeDamageCurve;
-    private Material material;
-
-    private void Awake()
-    {
-        material = new Material(meshRenderer.material);
-        meshRenderer.material = material;
-    }
 
     private void OnEnable()
     {
@@ -26,18 +19,16 @@ public class HealthLooseShaderBehaviour : MonoBehaviour
     }
     private void OnChangedHealth(float health)
     {
-
-
         StopAllCoroutines();
-        StartCoroutine(TakeDamageRoutine(takeDamageCurve, material));
+        StartCoroutine(TakeDamageRoutine(takeDamageCurve));
     }
 
-    IEnumerator TakeDamageRoutine(AnimationCurve curve, Material material)
+    IEnumerator TakeDamageRoutine(AnimationCurve curve)
     {
         PositionInterpolation interpolation = new PositionInterpolation(curve);
         while (!interpolation.Done)
         {
-            material.SetFloat("damage", interpolation.Evaluate());
+            materialInstiator.Material.SetFloat("damage", interpolation.Evaluate());
             yield return null;
         }
     }

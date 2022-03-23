@@ -8,7 +8,7 @@ public class PortalUser : MonoBehaviour
     public System.Action<Room, Room> ChangeRoom;
     public System.Action TeleportFinished;
 
-    [SerializeField] SkinnedMeshRenderer meshRenderer;
+    [SerializeField] MaterialInstantiator MaterialInstantiator;
 
     PortalTeleportation active;
 
@@ -16,15 +16,13 @@ public class PortalUser : MonoBehaviour
 
     public void Teleport(Portal from, Portal to)
     {
+        transform.position = from.TransformPointToTarget(transform.position);
         ChangeRoom?.Invoke(from.Room, to.Room);
-        transform.position = to.TeleportPosition.position;
-        TeleportFinished?.Invoke();
     }
 
     public PortalTeleportation StartTeleportation(Portal from, Portal to)
     {
-        Material mat = meshRenderer.material;
-        active = new PortalTeleportation(this, from, to, mat);
+        active = new PortalTeleportation(this, from, to, MaterialInstantiator);
         active.OnExit += OnExit;
         return active;
     }
@@ -32,6 +30,7 @@ public class PortalUser : MonoBehaviour
     private void OnExit()
     {
         active.OnExit -= OnExit;
+        TeleportFinished?.Invoke();
         active = null;
     }
 

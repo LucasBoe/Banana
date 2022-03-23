@@ -29,17 +29,8 @@ public class Portal : MonoBehaviour, IPathTarget
         if (user == null || user.IsTeleporting) return;
 
         PortalTeleportation teleportation = user.StartTeleportation(this, Target);
-        teleportations.Add(user,teleportation);
+        teleportations.Add(user, teleportation);
         teleportation.OnExit += () => teleportations.Remove(user);
-        //Teleport(user);
-    }
-
-    private void Teleport(PortalUser user)
-    {
-
-        Target.Active = false;
-        user.Teleport(this, Target);
-        Target.Teleported?.Invoke();
     }
 
     private void OnTriggerExit2D(Collider2D collision)

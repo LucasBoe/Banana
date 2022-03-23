@@ -1099,7 +1099,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 1294991775638767755}
-  meshRenderer: {fileID: 6275084609808653770}
+  materialInstiator: {fileID: 6926257665103595027}
   takeDamageCurve:
     serializedVersion: 2
     m_Curve:
@@ -1133,6 +1133,20 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6926257665103595027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572864896925823111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccee01c94e6bc6e45b0d91272e74809d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 6275084609808653770}
+  Material: {fileID: 0}
 --- !u!95 &7989862010283766255
 Animator:
   serializedVersion: 3

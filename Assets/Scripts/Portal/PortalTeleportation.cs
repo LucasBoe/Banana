@@ -8,14 +8,14 @@ public class PortalTeleportation
     private PortalUser portalUser;
     private Portal from;
     private Portal to;
-    private Material mat;
+    private MaterialInstantiator mat;
 
     bool crossedPointOfNoReturn => teleportationProgress > 0.25f;
     public System.Action OnExit;
 
     float teleportationProgress = 0;
 
-    public PortalTeleportation(PortalUser portalUser, Portal from, Portal to, Material mat)
+    public PortalTeleportation(PortalUser portalUser, Portal from, Portal to, MaterialInstantiator mat)
     {
         this.portalUser = portalUser;
         this.from = from;
@@ -33,7 +33,7 @@ public class PortalTeleportation
     {
         if (crossedPointOfNoReturn)
         {
-            teleportationProgress += Time.fixedDeltaTime;
+            teleportationProgress += Time.fixedDeltaTime * 2f;
             if (teleportationProgress >= 1f)
             {
                 OnExit?.Invoke();
@@ -50,15 +50,12 @@ public class PortalTeleportation
 
         Util.DebugDrawCross(world, Color.red, 0.25f, Time.fixedDeltaTime);
         Vector2 toUser = world - (Vector2)portalUser.transform.position;
-        mat.SetVector("portalPositionOffset", toUser);
-        mat.SetFloat("dissolve", teleportationProgress);
+        mat.Material.SetVector("portalPositionOffset", toUser);
+        mat.Material.SetFloat("dissolve", teleportationProgress);
     }
 
     private void Teleport()
     {
-        Debug.Log("Teleport to " + to);
-
-        Vector2 pos = portalUser.transform.position;
-        portalUser.transform.position = from.TransformPointToTarget(pos);
+        portalUser.Teleport(from, to);
     }
 }

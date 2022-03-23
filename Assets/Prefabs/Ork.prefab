@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: babed239ec5ade04cb4649bc2dc4728a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaterialInstantiator: {fileID: 5265375535305987059}
 --- !u!114 &6076958978463722845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1246,7 +1247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 2812867378942826014}
-  meshRenderer: {fileID: 7826328830811020701}
+  materialInstiator: {fileID: 5265375535305987059}
   takeDamageCurve:
     serializedVersion: 2
     m_Curve:
@@ -1280,6 +1281,20 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5265375535305987059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188234022557128923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccee01c94e6bc6e45b0d91272e74809d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 7826328830811020701}
+  Material: {fileID: 0}
 --- !u!95 &7443072189918583153
 Animator:
   serializedVersion: 3
