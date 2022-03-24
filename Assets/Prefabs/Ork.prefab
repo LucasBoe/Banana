@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 1289531252}
   - component: {fileID: 5818097344625774855}
   - component: {fileID: 1708998485700731160}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ork
   m_TagString: Helper
   m_Icon: {fileID: 0}

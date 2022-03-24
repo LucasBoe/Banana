@@ -24,7 +24,7 @@ public class Pathfinder : SingletonBehaviour<Pathfinder>
             Vector2 toCheck = start + roatedVector * (distance < 0.5f ? 0.1f : 0.25f);
 
             bool isAirAtDirect = CheckPosition(toCheck, ignore, room);
-            Util.DebugDrawCircle(toCheck, isAirAtDirect ? Color.green : Color.red, 0.25f, lifetime: 2);
+            Util.DebugDrawCircle(toCheck, isAirAtDirect ? Color.green : Color.red, 0.02f, lifetime: 0.5f);
 
             if (isAirAtDirect)
             {
@@ -47,7 +47,7 @@ public class Pathfinder : SingletonBehaviour<Pathfinder>
 
 
         for (int i = 1; i < points.Count; i++)
-            Debug.DrawLine(points[i - 1], points[i], Color.green, 2);
+            Debug.DrawLine(points[i - 1], points[i], Color.green, 0.5f);
 
         return points;
     }

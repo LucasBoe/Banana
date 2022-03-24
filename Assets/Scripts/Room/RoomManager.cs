@@ -16,7 +16,6 @@ public class RoomManager : SingletonBehaviour<RoomManager>
     public Portal GetPortalThatLeadsTo(Room from, Room to)
     {
         RecursiveSearch search = new RecursiveSearch(from, to);
-        Debug.LogWarning("found: ", search.Result);
         return search.Result;
     }
     private class RecursiveSearch
@@ -44,7 +43,6 @@ public class RoomManager : SingletonBehaviour<RoomManager>
 
                         if (subRoom != null && !roomsVisited.Contains(subRoom))
                         {
-                            Debug.Log("Checked room " + subRoom.name);
 
                             if (subRoom == from)
                             {

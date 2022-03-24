@@ -23,8 +23,6 @@ public class RoomInfo : MonoBehaviour
     }
     private void OnChangeRoom(Room from, Room to)
     {
-        Debug.Log("OnChangeRoom is: " + from + " to " + to);
-
         Room = to;
 
         from.UnregisterInfo(this);

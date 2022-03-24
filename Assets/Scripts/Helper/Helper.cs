@@ -31,7 +31,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
         combatModule.Enable();
         combatModule.FoundCombatTarget += EnterCombat;
         combatModule.LostAllCombatTargets += MoveToNewTarget;
-        portalUser.TeleportFinished += MoveToNewTarget;
+        portalUser.ChangeRoom += OnChangeRoom;
         moveModule.StopMove += OnTargetReached;
         health.Die += OnDie;
     }
@@ -41,7 +41,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
         combatModule.Disable();
         combatModule.FoundCombatTarget -= EnterCombat;
         combatModule.LostAllCombatTargets -= MoveToNewTarget;
-        portalUser.TeleportFinished -= MoveToNewTarget;
+        portalUser.ChangeRoom -= OnChangeRoom;
         moveModule.StopMove += OnTargetReached;
         health.Die -= OnDie;
     }
@@ -103,6 +103,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
         combatModule.Update();
     }
 
+    private void OnChangeRoom(Room from, Room to) => MoveToNewTarget();
 }
 
 namespace HelperModules
@@ -125,11 +126,21 @@ namespace HelperModules
         private List<Vector2> path;
         public bool IsMoving => path != null && path.Count > 0;
 
+        float lastPathUpdateTime;
+        Transform targetInfo;
+
         public void StartMoving(Transform target, System.Action targetReachedCallback)
         {
-            path = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
+            targetInfo = target;
+            UpdatePath(target);
             StartMove?.Invoke();
             this.targetReachedCallback = targetReachedCallback;
+        }
+
+        private void UpdatePath(Transform target)
+        {
+            lastPathUpdateTime = Time.time;
+            path = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
         }
 
         public void StopMoving()
@@ -154,6 +165,9 @@ namespace HelperModules
                     Vector2 vel = (dir).normalized * speed;
                     rigidbody.velocity = vel;
                     transform.up = rigidbody.velocity.normalized;
+
+                    if (lastPathUpdateTime + 0.5f < Time.time)
+                        UpdatePath(targetInfo);
 
                     if (dir.magnitude < 0.25f)
                         path.RemoveAt(0);
@@ -199,7 +213,14 @@ namespace HelperModules
                 return Cage.TargetTransform;
             }
 
-            target = EnemyManager.Instance.GetEnemy();
+            if (roomInfo.Room.Enemys.Count > 0)
+            {
+                target = roomInfo.Room.Enemys[0];
+            }
+            else
+            {
+                target = EnemyManager.Instance.GetEnemy();
+            }
 
             if (target != null)
             {
@@ -215,6 +236,9 @@ namespace HelperModules
                         return portalToTarget.TargetTransform;
                 }
             }
+
+            if (PlayerManager.Room == roomInfo.Room)
+                return PlayerManager.Player.FollowerTransform;
 
             return roomInfo.Room.GetRandomPoint();
         }

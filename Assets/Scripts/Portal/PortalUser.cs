@@ -6,7 +6,7 @@ using UnityEngine;
 public class PortalUser : MonoBehaviour
 {
     public System.Action<Room, Room> ChangeRoom;
-    public System.Action<Transform, Vector3> TeleportingPlayer;
+    public System.Action<Transform, Vector3, float> TeleportingPlayer;
     public System.Action TeleportFinished;
 
     [SerializeField] MaterialInstantiator MaterialInstantiator;
@@ -21,7 +21,8 @@ public class PortalUser : MonoBehaviour
         Vector2 before = transform.position;
 
         transform.position = from.TransformPointToTarget(transform.position);
-        TeleportingPlayer?.Invoke(transform, target - before);
+        float angleDifference = Vector2.SignedAngle(from.transform.up, -to.transform.up);
+        TeleportingPlayer?.Invoke(transform, target - before, angleDifference);
 
         ChangeRoom?.Invoke(from.Room, to.Room);
     }

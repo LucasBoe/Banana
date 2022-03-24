@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayerModules;
+
 public class Player : MonoBehaviour, IEnemyCombatTarget
 {
     [SerializeField] PlayerMoveModule moveModule;
@@ -10,9 +11,21 @@ public class Player : MonoBehaviour, IEnemyCombatTarget
     [SerializeField] PlayerInputModule inputModule;
     [SerializeField] PlayerAnimationModule animationModule;
 
-    public Vector2 Position => transform.position;
+    [SerializeField] PortalUser portalUser;
+    [SerializeField] public Transform FollowerTransform;
 
+    public Vector2 Position => transform.position;
     public bool IsNull => Equals(null);
+
+    private void OnEnable()
+    {
+        portalUser.TeleportingPlayer += inputModule.OnTeleportingPlayer;
+    }
+
+    private void OnDisable()
+    {
+        portalUser.TeleportingPlayer -= inputModule.OnTeleportingPlayer;
+    }
 
     private void FixedUpdate()
     {
@@ -38,11 +51,18 @@ namespace PlayerModules
     [System.Serializable]
     public class PlayerInputModule : PlayerModule
     {
+        float angleOffset = 0;
+
         [SerializeField] Vector2 input;
         public Vector2 GetInput()
         {
-            input = (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up);
+            input = (Input.GetAxis("Horizontal") * Vector2.right + Input.GetAxis("Vertical") * Vector2.up).Rotate(angleOffset);
             return input;
+        }
+
+        internal void OnTeleportingPlayer(Transform transform, Vector3 positionDelta, float angleOffsetDelta)
+        {
+            angleOffset += angleOffsetDelta;
         }
     }
 
