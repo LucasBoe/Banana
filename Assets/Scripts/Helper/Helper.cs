@@ -71,6 +71,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
 
     private void SetState(HelperState newState)
     {
+        if (state == newState) return;
         state = newState;
         ChangedState?.Invoke(newState);
     }
@@ -88,6 +89,9 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     private void UpdateTarget(UpdateTargetMode mode)
     {
         if (mode == UpdateTargetMode.Try && !targetModule.ShouldUpdate) return;
+
+        if (mode == UpdateTargetMode.Force)
+            moveModule.StopMoving();
 
         Transform target = targetModule.GetCurrentTarget();
 
@@ -124,6 +128,7 @@ namespace HelperModules
         public System.Action StopMove;
 
         private List<Vector2> path;
+        private Pathrequest runningRequest;
         public bool IsMoving => path != null && path.Count > 0;
 
         public int pathUpdateCounter = 0;
@@ -133,13 +138,27 @@ namespace HelperModules
             if (!IsMoving)
                 StartMove?.Invoke();
 
-            UpdatePath(target);
+            if (runningRequest == null)
+                RequestNewPath(target);
         }
 
-        private void UpdatePath(Transform target)
+        private void RequestNewPath(Transform target)
         {
+            if (runningRequest != null) return;
+
             pathUpdateCounter++;
-            path = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
+            runningRequest = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
+            runningRequest.Resolved += OnResolvedPathRequest;
+            
+        }
+
+        private void OnResolvedPathRequest(Pathrequest request, List<Vector2> newPath)
+        {
+            request.Resolved -= OnResolvedPathRequest;
+            runningRequest = null;
+
+            if (newPath.Count > 0)            
+                path = newPath;
         }
 
         public void StopMoving()
