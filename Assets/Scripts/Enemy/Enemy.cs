@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IPathTarget
+public class Enemy : MonoBehaviour, IHelperPathTarget, IHelperCombatTarget
 {
     [SerializeField] RoomInfo roomInfo;
     [SerializeField] Health health;
     [SerializeField] Collider2D collider2D;
     public Transform TargetTransform => transform;
     public Room Room => roomInfo.Room;
+
+    public bool IsAlive => !Equals(null) && !dead;
+
+    public Vector3 Position => transform.position;
 
     public System.Action<EnemyState, IEnemyCombatTarget> SetEnemyState;
 
@@ -28,6 +32,7 @@ public class Enemy : MonoBehaviour, IPathTarget
     }
     private void OnDie()
     {
+        dead = true;
         SetEnemyState?.Invoke(EnemyState.Dead, null);
         EnemyManager.Instance.UnregisterActive(this);
         collider2D.enabled = false;

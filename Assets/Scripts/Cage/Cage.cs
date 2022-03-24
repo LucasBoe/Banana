@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cage : MonoBehaviour, IPathTarget
+public class Cage : MonoBehaviour, IHelperPathTarget
 {
     [SerializeField] RoomInfo roomInfo;
     [SerializeField] Helper contains;
@@ -14,6 +14,9 @@ public class Cage : MonoBehaviour, IPathTarget
     bool active = false;
 
     public Transform TargetTransform => leaveTransform;
+    public Room Room => roomInfo.Room;
+
+    public bool IsAlive => true;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -31,7 +34,7 @@ public class Cage : MonoBehaviour, IPathTarget
         toEnable.SetActive(true);
         active = true;
         contains.transform.parent = roomInfo.Room.transform;
-        contains.MoveToNewTarget();
+        contains.ReleaseFromCage();
         Open?.Invoke();
     }
 }

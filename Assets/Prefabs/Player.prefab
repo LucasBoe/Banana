@@ -164,7 +164,7 @@ MonoBehaviour:
   animationModule:
     animator: {fileID: 1836494459151654314}
   portalUser: {fileID: 1836494457893832562}
-  FollowerTransform: {fileID: 2000737302447842483}
+  followerTransform: {fileID: 2000737302447842483}
 --- !u!114 &1836494457893832562
 MonoBehaviour:
   m_ObjectHideFlags: 0

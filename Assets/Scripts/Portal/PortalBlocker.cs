@@ -4,15 +4,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class PortalBlocker : MonoBehaviour
+public class PortalBlocker : MonoBehaviour, IHelperCombatTarget
 {
     [SerializeField] Collider2D collider;
     [SerializeField] List<GameObject> planks;
-    // Start is called before the first frame update
 
+    public Vector3 Position => transform.position;
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        CheckForDamage(collision.gameObject);
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("DamageHelper"))
+        CheckForDamage(collision.gameObject);
+    }
+    private void CheckForDamage(GameObject gameObject)
+    {
+        if (gameObject.CompareTag("DamageHelper") || gameObject.CompareTag("DamageEnemy"))
             Hit();
     }
 

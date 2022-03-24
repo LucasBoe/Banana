@@ -30,9 +30,7 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     {
         combatModule.Enable();
         combatModule.FoundCombatTarget += EnterCombat;
-        combatModule.LostAllCombatTargets += MoveToNewTarget;
         portalUser.ChangeRoom += OnChangeRoom;
-        moveModule.StopMove += OnTargetReached;
         health.Die += OnDie;
     }
 
@@ -40,11 +38,15 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     {
         combatModule.Disable();
         combatModule.FoundCombatTarget -= EnterCombat;
-        combatModule.LostAllCombatTargets -= MoveToNewTarget;
         portalUser.ChangeRoom -= OnChangeRoom;
-        moveModule.StopMove += OnTargetReached;
         health.Die -= OnDie;
     }
+
+    internal void ReleaseFromCage()
+    {
+        targetModule.ReleaseFromCage();
+    }
+
     private void Awake()
     {
         Cage cage = GetComponentInParent<Cage>();
@@ -53,30 +55,6 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
         {
             targetModule.SetCage(cage);
             SetState(HelperState.Idle);
-        }
-        else
-        {
-            MoveToNewTarget();
-        }
-    }
-    private void OnTargetReached()
-    {
-        if (state != HelperState.Attack && !moveModule.IsMoving)
-            MoveToNewTarget();
-    }
-
-    public void MoveToNewTarget()
-    {
-        Transform target = targetModule.GetTarget();
-
-        if (target != null)
-        {
-            moveModule.StartMoving(target, () =>
-            {
-                if (!targetModule.IsFinalTarget && state != HelperState.Attack)
-                    MoveToNewTarget();
-            });
-            SetState(HelperState.Walk);
         }
     }
     private void EnterCombat()
@@ -99,11 +77,34 @@ public class Helper : MonoBehaviour, IEnemyCombatTarget
     private void FixedUpdate()
     {
         if (!combatModule.HasCombatTarget)
+        {
+            UpdateTarget(UpdateTargetMode.Try);
             moveModule.Update();
+        }
+
         combatModule.Update();
     }
 
-    private void OnChangeRoom(Room from, Room to) => MoveToNewTarget();
+    private void UpdateTarget(UpdateTargetMode mode)
+    {
+        if (mode == UpdateTargetMode.Try && !targetModule.ShouldUpdate) return;
+
+        Transform target = targetModule.GetCurrentTarget();
+
+        if (target != null)
+        {
+            SetState(HelperState.Walk);
+            moveModule.SetMoveTarget(target);
+        }
+    }
+
+    private void OnChangeRoom(Room from, Room to) => UpdateTarget(UpdateTargetMode.Force);
+
+    private enum UpdateTargetMode
+    {
+        Try,
+        Force
+    }
 }
 
 namespace HelperModules
@@ -122,24 +123,22 @@ namespace HelperModules
         public System.Action StartMove;
         public System.Action StopMove;
 
-        private System.Action targetReachedCallback;
         private List<Vector2> path;
         public bool IsMoving => path != null && path.Count > 0;
 
-        float lastPathUpdateTime;
-        Transform targetInfo;
+        public int pathUpdateCounter = 0;
 
-        public void StartMoving(Transform target, System.Action targetReachedCallback)
+        internal void SetMoveTarget(Transform target)
         {
-            targetInfo = target;
+            if (!IsMoving)
+                StartMove?.Invoke();
+
             UpdatePath(target);
-            StartMove?.Invoke();
-            this.targetReachedCallback = targetReachedCallback;
         }
 
         private void UpdatePath(Transform target)
         {
-            lastPathUpdateTime = Time.time;
+            pathUpdateCounter++;
             path = Pathfinder.Instance.GetPathTo(transform.position, target.position, roomInfo.Room, new Collider2D[] { ownColliderToIgnoreForPathfinding });
         }
 
@@ -147,13 +146,13 @@ namespace HelperModules
         {
             path = null;
             rigidbody.velocity = Vector2.zero;
-            targetReachedCallback?.Invoke();
             StopMove?.Invoke();
         }
 
         public void Update()
         {
             isMoving = false;
+
             if (path != null)
             {
                 if (path.Count == 0)
@@ -165,9 +164,6 @@ namespace HelperModules
                     Vector2 vel = (dir).normalized * speed;
                     rigidbody.velocity = vel;
                     transform.up = rigidbody.velocity.normalized;
-
-                    if (lastPathUpdateTime + 0.5f < Time.time)
-                        UpdatePath(targetInfo);
 
                     if (dir.magnitude < 0.25f)
                         path.RemoveAt(0);
@@ -190,22 +186,31 @@ namespace HelperModules
     [System.Serializable]
     public class TargetModule
     {
+        [SerializeField] Transform transform;
         [SerializeField] RoomInfo roomInfo;
-
-        public bool IsFinalTarget => isFinalTarget;
+        public bool ShouldUpdate => cageIsOpen && lastTargetUpdateTime + 0.5f < Time.time && (target == null || !target.IsAlive || Vector2.Distance(transform.position, target.TargetTransform.position) > 0.5f);
 
         private bool isInCage = false;
-        private bool isFinalTarget = false;
+        private bool cageIsOpen = true;
+
         public Cage Cage;
-        private Enemy target;
+        private IHelperPathTarget target;
+
+        float lastTargetUpdateTime = 0;
 
         public void SetCage(Cage cage)
         {
+            cageIsOpen = false;
             isInCage = true;
             Cage = cage;
         }
 
-        public Transform GetTarget()
+        public void ReleaseFromCage()
+        {
+            cageIsOpen = true;
+        }
+
+        public Transform GetCurrentTarget()
         {
             if (isInCage)
             {
@@ -213,7 +218,9 @@ namespace HelperModules
                 return Cage.TargetTransform;
             }
 
-            if (roomInfo.Room.Enemys.Count > 0)
+            lastTargetUpdateTime = Time.time;
+
+            if (roomInfo.Room.Enemys.Count > 0 && roomInfo.Room.Enemys[0].IsAlive)
             {
                 target = roomInfo.Room.Enemys[0];
             }
@@ -222,11 +229,15 @@ namespace HelperModules
                 target = EnemyManager.Instance.GetEnemy();
             }
 
-            if (target != null)
+            if (target == null)
+            {
+                target = PlayerManager.Player;
+            }
+
+            if (target != null && target.IsAlive)
             {
                 if (roomInfo.Room.IsInside(target.TargetTransform.position))
                 {
-                    isFinalTarget = true;
                     return target.TargetTransform;
                 }
                 else
@@ -237,9 +248,6 @@ namespace HelperModules
                 }
             }
 
-            if (PlayerManager.Room == roomInfo.Room)
-                return PlayerManager.Player.FollowerTransform;
-
             return roomInfo.Room.GetRandomPoint();
         }
     }
@@ -247,7 +255,7 @@ namespace HelperModules
     [System.Serializable]
     public class CombatModule
     {
-        List<Enemy> targets = new List<Enemy>();
+        List<IHelperCombatTarget> targets = new List<IHelperCombatTarget>();
         [SerializeField] HelperCombatTrigger trigger;
         [SerializeField] Transform transform;
 
@@ -266,7 +274,7 @@ namespace HelperModules
         }
         private void OnTriggerEnter2D(Collider2D collider)
         {
-            Enemy enemy = collider.GetComponent<Enemy>();
+            IHelperCombatTarget enemy = collider.GetComponent<IHelperCombatTarget>();
             if (enemy != null)
             {
                 if (targets.Count == 0)
@@ -277,7 +285,7 @@ namespace HelperModules
 
         private void OnTriggerExit2D(Collider2D collider)
         {
-            Enemy enemy = collider.GetComponent<Enemy>();
+            IHelperCombatTarget enemy = collider.GetComponent<IHelperCombatTarget>();
             if (enemy != null && targets.Contains(enemy))
             {
                 targets.Remove(enemy);
@@ -291,7 +299,7 @@ namespace HelperModules
         {
             if (targets.Count == 0) return;
 
-            transform.up = (targets[0].transform.position - transform.position).normalized;
+            transform.up = (targets[0].Position - transform.position).normalized;
         }
     }
 }

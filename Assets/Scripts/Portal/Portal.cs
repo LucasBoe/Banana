@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Portal : MonoBehaviour, IPathTarget
+public class Portal : MonoBehaviour, IHelperPathTarget
 {
     [SerializeField] public Transform TeleportPosition;
     [SerializeField] public Portal Target;
@@ -16,6 +16,8 @@ public class Portal : MonoBehaviour, IPathTarget
     public Room Room => roomInfo.Room;
 
     public Transform TargetTransform => TeleportPosition;
+
+    public bool IsAlive => true;
 
     private Dictionary<PortalUser, PortalTeleportation> teleportations = new Dictionary<PortalUser, PortalTeleportation>();
 

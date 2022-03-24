@@ -168,7 +168,9 @@ MonoBehaviour:
     speed: 1
     ownColliderToIgnoreForPathfinding: {fileID: 5818097344625774855}
     isMoving: 0
+    pathUpdateCounter: 0
   targetModule:
+    transform: {fileID: 7443072189839584933}
     roomInfo: {fileID: 8669413604284495519}
     Cage: {fileID: 0}
   portalUser: {fileID: 6944276837928527045}

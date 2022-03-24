@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PlayerModules;
 
-public class Player : MonoBehaviour, IEnemyCombatTarget
+public class Player : MonoBehaviour, IEnemyCombatTarget, IHelperPathTarget
 {
     [SerializeField] PlayerMoveModule moveModule;
     [SerializeField] PlayerRoomModule roomModule;
@@ -12,10 +12,14 @@ public class Player : MonoBehaviour, IEnemyCombatTarget
     [SerializeField] PlayerAnimationModule animationModule;
 
     [SerializeField] PortalUser portalUser;
-    [SerializeField] public Transform FollowerTransform;
+    [SerializeField] public Transform followerTransform;
 
     public Vector2 Position => transform.position;
     public bool IsNull => Equals(null);
+    public bool IsAlive => !IsNull;
+    public Transform TargetTransform => followerTransform;
+    public Room Room => roomModule.Room;
+
 
     private void OnEnable()
     {
@@ -91,6 +95,8 @@ namespace PlayerModules
     public class PlayerRoomModule : PlayerModule
     {
         [SerializeField] RoomInfo roomInfo;
+
+        public Room Room => roomInfo.Room;
 
         public bool IsInsideRoom(Vector2 pos)
         {

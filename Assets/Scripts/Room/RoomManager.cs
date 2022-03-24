@@ -74,4 +74,9 @@ public class RoomManager : SingletonBehaviour<RoomManager>
         return outPortal;
     }
     public Room[] Rooms => rooms.ToArray();
+
+    internal Portal GetPortalThatLeadsTo(Room room1, object room2)
+    {
+        throw new NotImplementedException();
+    }
 }

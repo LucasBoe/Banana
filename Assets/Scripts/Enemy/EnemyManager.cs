@@ -9,7 +9,7 @@ public class EnemyManager : SingletonBehaviour<EnemyManager>
 
     public Enemy GetEnemy()
     {
-        if (active.Count > 0)
+        if (active.Count > 0 && active[0].IsAlive)
             return active[0];
 
         return null;
