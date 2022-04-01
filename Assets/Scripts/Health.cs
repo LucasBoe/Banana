@@ -49,6 +49,12 @@ public class Health : MonoBehaviour
         if (health < 0)
             Die?.Invoke();
     }
+
+    public void Heal(float amount)
+    {
+        health = Mathf.Clamp(health + amount, 0, maxHealth);
+        ChangedHealth?.Invoke(health / maxHealth);
+    }
 }
 
 internal interface IDamager
